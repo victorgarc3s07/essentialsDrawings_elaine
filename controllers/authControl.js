@@ -48,9 +48,8 @@ const requestPasswordReset = async (req, res) => {
         const token = crypto.randomBytes(20).toString('hex')
         const expireDate = new Date(Date.now() + 3600000)
         await db.promise().query('UPDATE dados_user SET reset_password_token = ?, reset_password_expires = ? WHERE email = ? ', [token, expireDate, email])
-    const resetLink = `http://localhost:3000/reset-password/${token}`
-        sendEmail(email, 'Recuperação de Senha', `Por favor, clique no link para redefinir sua
-   senha: ${resetLink}`)
+    const resetLink = `http://localhost:5000/reset-password/${token}`
+        sendEmail(email, 'Recuperação de Senha', `Por favor, clique no link para redefinir sua senha: ${resetLink}`)
         res.send('E-mail de recuperação de senha enviado')
     } catch (err) {
         console.error('Erro ao solicitar redefinição de senha:', err)
@@ -65,7 +64,7 @@ const resetPassword = async (req, res) => {
             return res.status(400).send('Token inválido ou expirado')
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10)
-        await db.promise().query('UPDATE dados_user SET password = ?, reset_password_token = NULL, reset_password_expires = NULL WHERE id = ? ', [hashedPassword, user[0].id])
+        await db.promise().query('UPDATE dados_user SET password = ?, reset_password_token = NULL, reset_password_expires = NULL WHERE id_user = ? ', [hashedPassword, user[0].id_user])
     res.send('Senha redefinida com sucesso')
     } catch (err) {
         console.error('Erro ao redefinir senha:', err)
