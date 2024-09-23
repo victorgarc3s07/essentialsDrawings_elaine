@@ -14,9 +14,37 @@
  birth_date date
  );
  
- alter table dados_user
- add constraint fk_UserDados foreign key (id_user) references user (id);
+alter table dados_user modify column password varchar(255);
  
+alter table dados_user
+add constraint fk_UserDados foreign key (id_user) references user (id);
+ 
+ALTER TABLE dados_user
+ADD COLUMN reset_password_token VARCHAR(255) NULL,
+ADD COLUMN reset_password_expires DATETIME NULL; 
+
+UPDATE `essentialsdrawing_db`.`dados_user` SET `email` = 'maria.e.lima73@aluno.senai.br' WHERE (`id_user` = '4');
+
+create table carrinho (
+id_img int,
+id_pack int,
+price_img decimal (5,2),
+price_pack decimal (5,2),
+price_total decimal (5,2)
+);
+
+SHOW INDEX FROM pack;
+SHOW INDEX FROM image;
+
+CREATE INDEX idx_pack_column ON pack(price);
+CREATE INDEX idx_img_column ON image(price);
+
+alter table carrinho
+add constraint fk_ImgCart foreign key (id_img) references image (id_image),
+add constraint fk_PackCart foreign key (id_pack) references pack (id_pack),
+add constraint fk_PricePackcart foreign key (price_pack) references pack (price),
+add constraint fk_PriceImgcart foreign key (price_img) references image (price);
+
  create table pedidos (
  id_pedido int primary key auto_increment,
  id_user int,
@@ -25,11 +53,20 @@
  id_payment int
  );
  
+alter table pedidos
+add column price_img decimal (5,2),
+add column price_pack decimal (5,2),
+add column price_total decimal (5,2);
+ 
  alter table pedidos
  add constraint fk_UserPedidos foreign key (id_user) references user (id),
  add constraint fk_ImgPedidos foreign key (id_img) references image (id_image),
  add constraint fk_PackPedidos foreign key (id_pack) references pack (id_pack),
  add constraint fk_PayPedidos foreign key (id_payment) references payment (id_payment);
+ 
+ alter table pedidos
+ add constraint fk_ImgPricepedidos foreign key (price_img) references image (price),
+ add constraint fk_PackPricepedidos foreign key (price_pack) references pack (price);
  
  create table image (
  id_image int primary key auto_increment,

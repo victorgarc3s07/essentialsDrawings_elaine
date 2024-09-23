@@ -15,7 +15,7 @@ const authRoutes = require('./routes/auth')
 const routes = require('./routes/routes')
 
 app.use('/api/auth', authRoutes)
-app.use('api/routes', routes)
+app.use('/api/routes', routes)
 
 app.get('/', (req, res) => {
     res.send('Conectado ao servidor.')
