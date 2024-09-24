@@ -33,6 +33,8 @@ price_pack decimal (5,2),
 price_total decimal (5,2)
 );
 
+alter table carrinho drop column price_total;
+
 SHOW INDEX FROM pack;
 SHOW INDEX FROM image;
 
@@ -76,6 +78,8 @@ add column price_total decimal (5,2);
  id_categoria int
  );
  
+
+ 
  alter table image
  add constraint fk_CategImg foreign key (id_categoria) references categoria (id_categoria);
  
@@ -89,6 +93,9 @@ id_image2 int,
 id_image3 int,
 id_image4 int
  );
+ 
+ alter table pack add column category varchar(255);
+ alter table pack rename column category to id_categoria;
 
 alter table pack
 add constraint fk_Img1Pack foreign key (id_image1) references image (id_image),
@@ -107,7 +114,14 @@ id_payment int primary key auto_increment,
 name varchar(255)
 );
  
- 
+ create trigger antesDelCateg 
+ before delete on categoria 
+ for each row
+ begin
+ update image 
+ set id_categoria = old.id_categoria 
+ where id_categoria = old.id_categoria; 
+ end;
  
  
  

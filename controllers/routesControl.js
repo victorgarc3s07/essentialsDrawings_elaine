@@ -15,6 +15,21 @@ const addImg = (req, res) => {
     )
 }
 
+const addPack = (req, res) => {
+    const {name, description, price, id_categoria, id_image1, id_image2, id_image3, id_image4} = req.body
+    db.query(
+        'INSERT INTO pack (name, description, price, id_categoria, id_image1, id_image2, id_image3, id_image4) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [name, description, price, id_categoria, id_image1, id_image2, id_image3, id_image4],
+        (err, results) => {
+            if(err) {console.error('Erro ao adicionar o pack.', err)
+                res.status(500).send('Erro ao adicionar o pack.')
+                return
+            }
+            res.status(201).send('Pack adicionado!')
+        }
+    )
+}
+
 const addCategory = (req, res) => {
     const {name, description} = req.body
     db.query(
@@ -31,10 +46,10 @@ const addCategory = (req, res) => {
 }
 
 const addCart = (req, res) => {
-    const {id_img, id_pack, price_img, price_pack, price_total} = req.body
+    const {id_img, id_pack, price_img, price_pack} = req.body
     db.query(
-        'INSERT INTO carrinho (id_img, id_pack, price_img, price_pack, price_total) VALUES (?, ?, ?, ?, ?)', 
-        [id_img, id_pack, price_img, price_pack, price_total],
+        'INSERT INTO carrinho (id_img, id_pack, price_img, price_pack) VALUES (?, ?, ?, ?)', 
+        [id_img, id_pack, price_img, price_pack],
         (err, results) => {
             if(err){
                 console.error('Erro ao adicionar o item.', err)
@@ -84,13 +99,75 @@ const orders = (req, res) => {
     })
 }
 
+const categories = (req, res) => {
+    db.query('SELECT * FROM categoria', (err, results) => {
+        if (err) {
+            console.error('Erro ao obter as categorias', err)
+            res.status(500).send('Erro ao obter as categorias')
+            return
+        }
+        res.json(results)
+    })
+}
+
+const images = (req, res) => {
+    db.query('SELECT * FROM image', (err, results) => {
+        if (err) {
+            console.error('Erro ao obter as imagens', err)
+            res.status(500).send('Erro ao obter as imagens')
+            return
+        }
+        res.json(results)
+    })
+}
+
+const packs = (req, res) => {
+    db.query('SELECT * FROM pack', (err, results) => {
+        if (err) {
+            console.error('Erro ao obter os packs', err)
+            res.status(500).send('Erro ao obter os packs')
+            return
+        }
+        res.json(results)
+    })
+}
+
+const cart = (req, res) => {
+    db.query ('SELECT * FROM carrinho', (err, results) => {
+        if(err) {
+            console.error('Erro ao obter os itens do carrinho', err)
+            res.status(500).send('Erro ao obter os itens do carrinho')
+            return
+        }
+        res.json(results)
+    })
+}
+
+const delCategory = (req, res) => {
+    const {id_categoria} = req.params
+    db.query ('DELETE FROM categoria WHERE id_categoria = ?', [id_categoria], (err, results) => {
+        if(err) {
+            console.error('Erro ao deletar a categoria', err)
+            res.status(500).send('Erro ao deletar a categoria')
+            return
+        }
+        res.send('Categoria deletada.')
+    })
+}
+
 // fazer o get para todos os pedidos do usuario específico
 
 module.exports = {
     addCategory,
     addImg,
+    addPack,
     addCart,
     addPedido,
     users,
-    orders
+    categories,
+    images,
+    packs,
+    cart,
+    orders,
+    delCategory
 }
