@@ -45,23 +45,7 @@ const addCategory = (req, res) => {
     )
 }
 
-const addCart = (req, res) => {
-    const {id_img, id_pack, price_img, price_pack} = req.body
-    db.query(
-        'INSERT INTO carrinho (id_img, id_pack, price_img, price_pack) VALUES (?, ?, ?, ?)', 
-        [id_img, id_pack, price_img, price_pack],
-        (err, results) => {
-            if(err){
-                console.error('Erro ao adicionar o item.', err)
-                res.status(500).send('Erro ao adicionar o item.')
-                return
-            }
-            res.status(201).send('Item adicionado ao carrinho!')
-        }
-    )
-}
-
-const addPedido = (req, res) => {
+const addOrder = (req, res) => {
     const {id_user, id_img, id_pack, id_payment} = req.body
     db.query(
         'INSERT INTO pedidos (id_user, id_img, id_pack, id_payment) VALUES (?, ?, ?, ?)', 
@@ -73,6 +57,22 @@ const addPedido = (req, res) => {
                 return
             }
             res.status(201).send('Pedido adicionado!')
+        }
+    )
+}
+
+const addPay = (req, res) => {
+    const {name} = req.body
+    db.query(
+        'INSERT INTO payment (name) VALUES (?)',
+        [name],
+        (err, results) => {
+            if(err){
+                console.error('Erro ao adicionar o método de pagamento.', err)
+                res.status(500).send('Erro ao adicionar o método de pagamento.')
+                return
+            }
+            res.status(201).send('Método de pagamento adicionado!')
         }
     )
 }
@@ -132,11 +132,11 @@ const packs = (req, res) => {
     })
 }
 
-const cart = (req, res) => {
-    db.query ('SELECT * FROM carrinho', (err, results) => {
+const payments = (req, res) => {
+    db.query('SELECT * FROM payment', (err, results) => {
         if(err) {
-            console.error('Erro ao obter os itens do carrinho', err)
-            res.status(500).send('Erro ao obter os itens do carrinho')
+            console.error('Erro ao obter métodos de pagamento', err)
+            res.status(500).send('Erro ao obter métodos de pagamento')
             return
         }
         res.json(results)
@@ -161,13 +161,13 @@ module.exports = {
     addCategory,
     addImg,
     addPack,
-    addCart,
-    addPedido,
+    addOrder,
+    addPay,
     users,
     categories,
     images,
     packs,
-    cart,
     orders,
+    payments,
     delCategory
 }

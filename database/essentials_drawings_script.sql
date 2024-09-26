@@ -78,8 +78,6 @@ add column price_total decimal (5,2);
  id_categoria int
  );
  
-
- 
  alter table image
  add constraint fk_CategImg foreign key (id_categoria) references categoria (id_categoria);
  
@@ -114,6 +112,8 @@ id_payment int primary key auto_increment,
 name varchar(255)
 );
  
+ delimiter $$
+ 
  create trigger antesDelCateg 
  before delete on categoria 
  for each row
@@ -123,6 +123,7 @@ name varchar(255)
  where id_categoria = old.id_categoria; 
  end;
  
+ delimiter $$
  
  
  

@@ -1,20 +1,40 @@
 const express = require('express')
 const router = express.Router()
-const routesControl = require('../controllers/routesControl')
+const routesAdm = require('../controllers/routesAdm');
+const routesCart = require('../controllers/routesCart');
+const routesUser = require('../controllers/routesUser');
 const authMiddleware = require('../middlewares/authMiddleware');
 
-router.post('/category', authMiddleware, routesControl.addCategory)
-router.get('/category', authMiddleware, routesControl.categories)
-router.delete('/category/:id_categoria', authMiddleware, routesControl.delCategory)
-router.post('/addimg', authMiddleware, routesControl.addImg)
-router.post('/addpack', authMiddleware, routesControl.addPack)
-router.post('/addcart', authMiddleware, routesControl.addCart)
-router.post('/pedidos', authMiddleware, routesControl.addPedido)
-router.get('/user', authMiddleware, routesControl.users)
+router.post('/add-category', authMiddleware, routesAdm.addCategory)
+router.get('/categories', authMiddleware, routesAdm.categories)
+router.delete('/category/:id_categoria', authMiddleware, routesAdm.delCategory)
+//patch payment
 
-router.get('/images', authMiddleware, routesControl.images)
-router.get('/packs', authMiddleware, routesControl.packs)
-router.get('/cart', authMiddleware, routesControl.cart)
-router.get('/orders', authMiddleware, routesControl.orders)
+router.post('/add-payment', authMiddleware, routesAdm.addPay)
+router.get('/payments', authMiddleware, routesAdm.payments)
+//deletar payment
+//patch payment
+
+router.post('/add-image', authMiddleware, routesAdm.addImg)
+router.get('/images', authMiddleware, routesAdm.images)
+//deletar image
+//patch image
+
+router.post('/add-pack', authMiddleware, routesAdm.addPack)
+router.get('/packs', authMiddleware, routesAdm.packs)
+//deletar pack
+//patch pack
+
+router.post('/add-order', authMiddleware, routesAdm.addOrder)
+router.get('/orders', authMiddleware, routesAdm.orders)
+//deletar order
+//patch order ?
+
+router.get('/user', authMiddleware, routesAdm.users)
+//deletar user
+
+router.post('/addcart', authMiddleware, routesCart.addCart)
+router.get('/cart', authMiddleware, routesCart.cart)
+//deletar itens do cart
 
 module.exports = router
