@@ -7,13 +7,13 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 router.post('/add-category', authMiddleware, routesAdm.addCategory)
 router.get('/categories', authMiddleware, routesAdm.categories)
+router.patch('/edit-category/:id_categoria', authMiddleware, routesAdm.editCategory)
 router.delete('/category/:id_categoria', authMiddleware, routesAdm.delCategory)
-//patch payment
 
-router.post('/add-payment', authMiddleware, routesAdm.addPay)
+router.post('/add-payment', authMiddleware, routesAdm.addPayment)
 router.get('/payments', authMiddleware, routesAdm.payments)
-//deletar payment
-//patch payment
+router.patch('/edit-payment/:id_payment', authMiddleware, routesAdm.editPayment)
+router.delete('/payment/:id_payment', authMiddleware, routesAdm.delPayment)
 
 router.post('/add-image', authMiddleware, routesAdm.addImg)
 router.get('/images', authMiddleware, routesAdm.images)

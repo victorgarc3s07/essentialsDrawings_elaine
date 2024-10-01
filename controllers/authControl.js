@@ -59,12 +59,12 @@ const requestPasswordReset = async (req, res) => {
 const resetPassword = async (req, res) => {
     const { token, newPassword } = req.body;
     try {
-        const [user] = await db.promise().query('SELECT * FROM dados_user WHERE reset_password_token = ? AND reset_password_expires > NOW()', [token])
+        const [user] = await db.promise().query('SELECT * FROM dados_user WHERE resPassToken = ? AND resPassExpires > NOW()', [token])
     if (user.length === 0) {
             return res.status(400).send('Token inválido ou expirado')
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10)
-        await db.promise().query('UPDATE dados_user SET password = ?, reset_password_token = NULL, reset_password_expires = NULL WHERE id_user = ? ', [hashedPassword, user[0].id_user])
+        await db.promise().query('UPDATE dados_user SET password = ?, resPassToken = NULL, resPassExpires = NULL WHERE id_user = ? ', [hashedPassword, user[0].id_user])
     res.send('Senha redefinida com sucesso')
     } catch (err) {
         console.error('Erro ao redefinir senha:', err)
