@@ -13,7 +13,7 @@ const registerUser = async (req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10)
         await db.promise().query('INSERT INTO user (name) VALUES (?)', [name])
-        await db.promise().query('INSERT INTO dados_user (email, password, birth_date) VALUES (?, ?, ?)', [email, password, birth_date])
+        await db.promise().query('INSERT INTO dados_user (email, password, birth_date) VALUES (?, ?, ?)', [email, hashedPassword, birth_date])
         res.status(201).send('Usuário registrado com sucesso!')
     } catch (err) {
         console.error('Erro ao registrar usuário:', err)
@@ -47,7 +47,7 @@ const requestPasswordReset = async (req, res) => {
         }
         const token = crypto.randomBytes(20).toString('hex')
         const expireDate = new Date(Date.now() + 3600000)
-        await db.promise().query('UPDATE dados_user SET reset_password_token = ?, reset_password_expires = ? WHERE email = ? ', [token, expireDate, email])
+        await db.promise().query('UPDATE dados_user SET resPassToken = ?, resPassExpires = ? WHERE email = ? ', [token, expireDate, email])
     const resetLink = `http://localhost:5000/reset-password/${token}`
         sendEmail(email, 'Recuperação de Senha', `Por favor, clique no link para redefinir sua senha: ${resetLink}`)
         res.send('E-mail de recuperação de senha enviado')
