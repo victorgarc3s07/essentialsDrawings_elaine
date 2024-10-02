@@ -17,21 +17,26 @@ router.delete('/payment/:id_payment', authMiddleware, routesAdm.delPayment)
 
 router.post('/add-image', authMiddleware, routesAdm.addImg)
 router.get('/images', authMiddleware, routesAdm.images)
-//deletar image
-//patch image
+router.patch('/edit-image/:id_image', authMiddleware, routesAdm.editImg)
+router.delete('/image/:id_image', authMiddleware, routesAdm.delImg)
 
 router.post('/add-pack', authMiddleware, routesAdm.addPack)
 router.get('/packs', authMiddleware, routesAdm.packs)
-//deletar pack
-//patch pack
+router.patch('/edit-pack/:id_pack', authMiddleware, routesAdm.editPack)
+router.delete('/pack/:id_pack', authMiddleware, routesAdm.delPack)
 
-router.post('/add-order', authMiddleware, routesAdm.addOrder)
-router.get('/orders', authMiddleware, routesAdm.orders)
-//deletar order
+router.post('/add-employee', authMiddleware, routesAdm.addEmployee)
+router.get('/employees', authMiddleware, routesAdm.employees)
+router.patch('/edit-employee/:id_employee', authMiddleware, routesAdm.editEmployee)
+router.delete('/employee/:id_employee', authMiddleware, routesAdm.delEmployee)
+
+router.post('/add-order', authMiddleware, routesAdm.addOrder) //corrigir
+router.get('/orders', authMiddleware, routesAdm.orders) //corrigir
+//deletar order ?
 //patch order ?
 
-router.get('/user', authMiddleware, routesAdm.users)
-//deletar user
+router.get('/users', authMiddleware, routesAdm.users)
+//deletar user por adm ou user ?
 
 router.post('/addcart', authMiddleware, routesCart.addCart)
 router.get('/cart', authMiddleware, routesCart.cart)

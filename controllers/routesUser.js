@@ -1,15 +1,31 @@
 const db = require('../config/db')
 
 //modificar pro usuario
-const users = (req, res) => {
+const dadosUser = (req, res) => {
     db.query('SELECT * FROM user', (err, results) => {
         if (err) {
-            console.error('Erro ao obter os usuários cadastrados', err)
-            res.status(500).send('Erro ao obter os usuários cadastrados')
+            console.error('Erro ao obter seus dados.', err)
+            res.status(500).send('Erro ao obter seus dados.')
             return
         }
         res.json(results)
     })
+
+    // app.get('/api/user-data', (req, res) => {
+    //     const query = `
+    //         SELECT user.id, user.nome, dados_user.dados
+    //         FROM user
+    //         LEFT JOIN dados_user ON user.id = dados_user.user_id
+    //     `;
+    
+    //     db.query(query, (err, results) => {
+    //         if (err) {
+    //             return res.status(500).json({ error: 'Erro ao buscar dados' });
+    //         }
+    //         res.json(results);
+    //     });
+    // });
+
 }
 //modificar pro usuario
 const orders = (req, res) => {

@@ -96,16 +96,14 @@ const editPayment = (req, res) => {
         values.push(value);
     }
     values.push(id_payment);
-    db.query(`UPDATE payment SET ${query.join(', ')} WHERE id_payment = ?`, values,
-        (err, results) => {
-            if(err){
-                console.error('Erro ao atualizar a categoria', err)
-                res.status(500).send('Erro ao atualizar a categoria')
-                return
-            }
-            res.send('Método de pagamento atualizado com sucesso!')
+    db.query(`UPDATE payment SET ${query.join(', ')} WHERE id_payment = ?`, values, (err, results) => {
+        if(err){
+            console.error('Erro ao atualizar a categoria', err)
+            res.status(500).send('Erro ao atualizar a categoria')
+            return
         }
-    )
+        res.send('Método de pagamento atualizado com sucesso!')
+    })
 }
 
 const delPayment = (req, res) => {
@@ -146,6 +144,37 @@ const images = (req, res) => {
     })
 }
 
+const editImg = (req, res) => {
+    const {id_image} = req.params;
+    const fields = req.body;
+    const query = [];
+    const values = [];
+    for (const [key, value] of Object.entries(fields)){
+        query.push(`${key} = ?`);
+        values.push(value);
+    }
+    values.push(id_image);
+    db.query(`UPDATE image SET ${query.join(', ')} WHERE id_image = ?`, values, (err, results) => {
+        if(err){
+            console.error('Erro ao atualizar a imagem.', err)
+            res.status(500).send('Erro ao atualizar a imagem.')
+            return;
+        }
+        res.send('Imagem atualizada com sucesso!')
+    })
+}
+
+const delImg = (req, res) => {
+    const {id_image} = req.params;
+    db.query('DELETE FROM image WHERE id_image = ?', [id_image], (err, results) => {
+        if(err) {
+            console.error('Erro ao deletar a imagem.', err);
+            res.status(500).send('Erros ao deletar a imagem.');
+            return;
+        }
+        res.send('Imagem deletada com sucesso!')
+    })
+}
 
 const addPack = (req, res) => {
     const {name, description, price, id_categoria, id_image1, id_image2, id_image3, id_image4} = req.body
@@ -162,7 +191,50 @@ const addPack = (req, res) => {
     )
 }
 
-const addOrder = (req, res) => {
+const packs = (req, res) => {
+    db.query('SELECT * FROM pack', (err, results) => {
+        if (err) {
+            console.error('Erro ao obter os packs', err)
+            res.status(500).send('Erro ao obter os packs')
+            return
+        }
+        res.json(results)
+    })
+}
+
+const editPack = (req, res) => {
+    const {id_pack} = req.params;
+    const fields = req.body;
+    const query = [];
+    const values = [];
+    for(const [key, value] of Object.entries(fields)){
+        query.push(`${key} = ?`);
+        values.push(value);
+    }
+    values.push(id_pack);
+    db.query(`UPDATE pack SET ${query.join(', ')} WHERE id_img = ?`, values, (err, results) => {
+        if(err) {
+            console.error('Erro ao atualizar o pack.', err);
+            res.status(500).send('Erro ao atualizar o pack.');
+            return;
+        }
+        res.send('Pack atualizado com sucesso!')
+    })
+}
+
+const delPack = (req, res) => {
+    const {id_pack} = req.params;
+    db.query('DELETE FROM pack WHERE id_img = ?', [id_pack], (err, results) => {
+        if(err){
+            console.error('Erro ao deletar o pack.', err);
+            res.status(500).send('Erro ao deletar o pack.');
+            return;
+        }
+        res.send('Pack deletado com sucesso!')
+    })
+}
+
+const addOrder = (req, res) => { //corrigir
     const {id_user, id_img, id_pack, id_payment} = req.body
     db.query(
         'INSERT INTO pedidos (id_user, id_img, id_pack, id_payment) VALUES (?, ?, ?, ?)', 
@@ -178,6 +250,61 @@ const addOrder = (req, res) => {
     )
 }
 
+const addEmployee = (req, res) => {
+    const {name, email, password, birth_date, position} = req.body;
+    db.query('INSERT INTO employees (name, email, password, birth_date, position) VALUES (?, ?, ?, ?, ?)',
+        [name, email, password, birth_date, position],
+        (err, results) => {
+            if(err){
+                console.error('Erro ao cadastrar funcionário.', err)
+                res.stutus(500).send('Erro ao cadastrar funcionário.')
+                return;
+            }
+            res.send('Funcionário cadastrado com sucesso!')
+        }
+    )
+}
+
+const delEmployee = (req, res) => {
+    const {id_employee} = req.params;
+    db.query('DELETE FROM employees WHERE id_employee = ?', [id_employee], (err, results) => {
+        if(err) {
+            console.error('Erro ao deletar funcionário.', err)
+            res.status(500).send('Erro ao deletar funcionário.')
+            return;
+        }
+        res.send('Funcionário deletado com sucesso!')
+    })
+}
+
+const employees = (req, res) => {
+    db.query('SELECT * FROM employees', (err, results) => {
+        if (err) {
+            console.error('Erro ao obter os funcionários cadastrados', err)
+            res.status(500).send('Erro ao obter os funcionários cadastrados')
+            return
+        }
+        res.json(results)
+    })
+}
+
+const editEmployee = (req, res) => {
+    const {id_employee} = req.params;
+    const {position} = req.body;
+    if(!position){
+        res.status(400).send('Apenas o campo cargo é editável.')
+        return;
+    }
+    db.query('UPDATE employees SET position = ? WHERE id_employee = ?', [id_employee, position], (err, results) => {
+        if(err) {
+            console.error('Erro ao atualizar o cargo.', err);
+            res.status(500).send('Erro ao atualizar o cargo.');
+            return;
+        }
+        res.send('Cargo atualizado com sucesso!')
+    })
+}
+
 const users = (req, res) => {
     db.query('SELECT * FROM user', (err, results) => {
         if (err) {
@@ -189,22 +316,11 @@ const users = (req, res) => {
     })
 }
 
-const orders = (req, res) => {
+const orders = (req, res) => { //corrigir
     db.query('SELECT * FROM pedidos', (err, results) => {
         if (err) {
             console.error('Erro ao obter os pedidos processados', err)
             res.status(500).send('Erro ao obter os pedidos processados')
-            return
-        }
-        res.json(results)
-    })
-}
-
-const packs = (req, res) => {
-    db.query('SELECT * FROM pack', (err, results) => {
-        if (err) {
-            console.error('Erro ao obter os packs', err)
-            res.status(500).send('Erro ao obter os packs')
             return
         }
         res.json(results)
@@ -225,11 +341,18 @@ module.exports = {
     editPayment,
     delPayment,
     addImg,
-    addPack,
-    addOrder,
-    users,
     images,
+    editImg,
+    delImg,
+    addPack,
     packs,
-    orders,
-    delCategory
+    editPack,
+    delPack,
+    addOrder, //corrigir
+    addEmployee,
+    employees,
+    editEmployee,
+    delEmployee,
+    users,
+    orders //corrigir
 }

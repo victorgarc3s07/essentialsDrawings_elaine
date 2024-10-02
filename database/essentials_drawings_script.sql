@@ -70,6 +70,17 @@ CREATE TABLE dat_del_category (
     id_pack INT,
     data_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+create table employees (
+id_employee int primary key auto_increment,
+name varchar(255),
+email varchar(255),
+password varchar(255),
+birth_date date,
+position varchar(255),
+resPassToken VARCHAR(255) NULL,
+resPassExpires DATETIME NULL
+);
  
 alter table dados_user
 add constraint fk_UserDados foreign key (id_user) references user (id);
@@ -111,15 +122,15 @@ add constraint fk_Img3Pack foreign key (id_image3) references image (id_image),
 add constraint fk_Img4Pack foreign key (id_image4) references image (id_image);
 
 DELIMITER //
-CREATE TRIGGER del_category1
+CREATE TRIGGER del_category2
 BEFORE DELETE ON categoria
 FOR EACH ROW
 BEGIN
 
-	INSERT INTO dat_del_category (id_img, id_categoria)
-	SELECT id_image, OLD.id_categoria
+	INSERT INTO dat_del_category (id_img, id_pack, id_categoria)
+	SELECT image.id_image, pack.id_pack, OLD.id_categoria
 	FROM image
-	WHERE id_categoria = OLD.id_categoria;
+    JOIN pack ON id_categoria = OLD.id_categoria;
 
 END //
 DELIMITER ;
