@@ -25,7 +25,8 @@ router.get('/packs', authMiddleware, routesAdm.packs)
 router.patch('/edit-pack/:id_pack', authMiddleware, routesAdm.editPack)
 router.delete('/pack/:id_pack', authMiddleware, routesAdm.delPack)
 
-router.post('/add-employee', authMiddleware, routesAdm.addEmployee)
+router.get('/categoriesDel', authMiddleware, routesAdm.categoriaDeletada)
+
 router.get('/employees', authMiddleware, routesAdm.employees)
 router.patch('/edit-employee/:id_employee', authMiddleware, routesAdm.editEmployee)
 router.delete('/employee/:id_employee', authMiddleware, routesAdm.delEmployee)
@@ -41,5 +42,10 @@ router.get('/users', authMiddleware, routesAdm.users)
 router.post('/addcart', authMiddleware, routesCart.addCart)
 router.get('/cart', authMiddleware, routesCart.cart)
 //deletar itens do cart
+
+router.get('/datas-user/:id', authMiddleware, routesUser.dadosUser)
+router.patch('/datas-user/:id', authMiddleware, routesUser.editDatasUser)
+router.get('/datas-employee/:id_employee', authMiddleware, routesUser.dadosEmployee)
+router.patch('/datas-employee/:id_employee', authMiddleware, routesUser.editDatasEmployee)
 
 module.exports = router

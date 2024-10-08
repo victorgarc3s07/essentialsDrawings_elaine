@@ -13,46 +13,75 @@ const registerUser = async (req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10)
         await db.promise().query('INSERT INTO user (name) VALUES (?)', [name])
-        await db.promise().query('INSERT INTO dados_user (email, password, birth_date) VALUES (?, ?, ?)', [email, hashedPassword, birth_date])
+        await db.promise().query(`INSERT INTO dados_user (email, password, birth_date) 
+            VALUES (?, ?, ?)`, [email, hashedPassword, birth_date])
         res.status(201).send('Usuário registrado com sucesso!')
     } catch (err) {
         console.error('Erro ao registrar usuário:', err)
         res.status(500).send('Erro ao registrar usuário.')
     }
 }
-const loginUser = async (req, res) => {
-    const { email, password } = req.body
+const registerEmployee = async (req, res) => {
+    const { name, email, password, birth_date, position } = req.body
     try {
-        const [user] = await db.promise().query('SELECT * FROM dados_user WHERE email = ?', [email])
-        if (user.length === 0) {
-            return res.status(400).send('Credenciais Inválidas')
+        const [existingUser] = await db.promise().query('SELECT * FROM employees WHERE email = ?', [email])
+        if (existingUser.length > 0) {
+            return res.status(400).send('Funcionário já registrado!')
         }
-        const isMatch = await bcrypt.compare(password, user[0].password)
-        if (!isMatch) {
-            return res.status(400).send('Credenciais Inválidas')
-        }
-        const token = jwt.sign({ userId: user[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' })
-        res.json({ token })
+        const hashedPassword = await bcrypt.hash(password, 10)
+        await db.promise().query(`INSERT INTO employees (name, email, password, birth_date, position)
+            VALUES (?, ?, ?, ?, ?)`, [name, email, hashedPassword, birth_date, position])
+        res.status(201).send('Funcionário registrado com sucesso!')
     } catch (err) {
-        console.error('Erro na autenticação do usuário', err)
-        res.status(500).send('Erro na autenticação do usuário')
-    }
-    try {
-        const [employee] = await db.promise().query('SELECT * FROM employees WHERE email = ?', [email])
-        if (employee.length === 0) {
-            return res.status(400).send('Credenciais Inválidas')
-        }
-        const isMatch = await bcrypt.compare(password, user[0].password)
-        if (!isMatch) {
-            return res.status(400).send('Credenciais Inválidas')
-        }
-        const token = jwt.sign({ userId: user[0].id_employee }, process.env.JWT_SECRET, { expiresIn: '1h' })
-        res.json({ token })
-    } catch (err) {
-        console.error('Erro na autenticação do usuário', err)
-        res.status(500).send('Erro na autenticação do usuário')
+        console.error('Erro ao registrar funcionário:', err)
+        res.status(500).send('Erro ao registrar funcionário.')
     }
 }
+const login = async (req, res) => {
+    const { email, password, role } = req.body
+    try {
+        let userQuery;
+        if (role === 'user') {
+            userQuery = 'SELECT * FROM dados_user WHERE email = ?';
+        } else if (role === 'employee') {
+            userQuery = 'SELECT * FROM employees WHERE email = ?';
+        } else {
+            return res.status(400).send('Posição inválida');
+        }
+        const [result] = await db.promise().query(userQuery, [email])
+        if (result.length === 0) {
+            return res.status(400).send('Credenciais Inválidas')
+        }
+        const isMatch = await bcrypt.compare(password, result[0].password)
+        if (!isMatch) {
+            return res.status(400).send('Credenciais Inválidas')
+        }
+        const token = jwt.sign({ userId: role === 'user' ? result[0].id : result[0].id_employee},
+            process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.json({ token })
+    } catch (err) {
+        console.error('Erro na autenticação', err)
+        res.status(500).send('Erro na autenticação')
+    }
+}
+// const loginEmployee = async (req, res) => {
+//     const {email, password} = req.body
+//     try {
+//         const [employee] = await db.promise().query('SELECT * FROM employees WHERE email = ?', [email])
+//         if (employee.length === 0) {
+//             return res.status(400).send('Credenciais Inválidas')
+//         }
+//         const isMatch = await bcrypt.compare(password, user[0].password)
+//         if (!isMatch) {
+//             return res.status(400).send('Credenciais Inválidas')
+//         }
+//         const token = jwt.sign({ userId: user[0].id_employee }, process.env.JWT_SECRET, { expiresIn: '1h' })
+//         res.json({ token })
+//     } catch (err) {
+//         console.error('Erro na autenticação do funcionário', err)
+//         res.status(500).send('Erro na autenticação do funcionário')
+//     }
+// }
 const requestPasswordReset = async (req, res) => {
     const { email } = req.body;
     try {
@@ -117,7 +146,9 @@ const resetPassword = async (req, res) => {
 
 module.exports = {
     registerUser,
-    loginUser,
+    registerEmployee,
+    login,
+    // loginEmployee,
     requestPasswordReset,
     resetPassword
 }

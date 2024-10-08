@@ -212,7 +212,7 @@ const editPack = (req, res) => {
         values.push(value);
     }
     values.push(id_pack);
-    db.query(`UPDATE pack SET ${query.join(', ')} WHERE id_img = ?`, values, (err, results) => {
+    db.query(`UPDATE pack SET ${query.join(', ')} WHERE id_pack = ?`, values, (err, results) => {
         if(err) {
             console.error('Erro ao atualizar o pack.', err);
             res.status(500).send('Erro ao atualizar o pack.');
@@ -224,7 +224,7 @@ const editPack = (req, res) => {
 
 const delPack = (req, res) => {
     const {id_pack} = req.params;
-    db.query('DELETE FROM pack WHERE id_img = ?', [id_pack], (err, results) => {
+    db.query('DELETE FROM pack WHERE id_pack = ?', [id_pack], (err, results) => {
         if(err){
             console.error('Erro ao deletar o pack.', err);
             res.status(500).send('Erro ao deletar o pack.');
@@ -326,6 +326,16 @@ const orders = (req, res) => { //corrigir
         res.json(results)
     })
 }
+const categoriaDeletada = (req, res) => {
+    db.query('SELECT * FROM dat_del_category', (err, results) => {
+        if (err) {
+            console.error('Erro ao obter os dados de backup de categoria deletada', err)
+            res.status(500).send('Erro ao obter os dados de backup de categoria deletada')
+            return
+        }
+        res.json(results)
+    })
+}
 
 
 
@@ -354,5 +364,6 @@ module.exports = {
     editEmployee,
     delEmployee,
     users,
-    orders //corrigir
+    orders, //corrigir
+    categoriaDeletada
 }

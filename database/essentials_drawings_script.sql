@@ -122,7 +122,7 @@ add constraint fk_Img3Pack foreign key (id_image3) references image (id_image),
 add constraint fk_Img4Pack foreign key (id_image4) references image (id_image);
 
 DELIMITER //
-CREATE TRIGGER del_category2
+CREATE TRIGGER del_category
 BEFORE DELETE ON categoria
 FOR EACH ROW
 BEGIN
@@ -130,9 +130,24 @@ BEGIN
 	INSERT INTO dat_del_category (id_img, id_pack, id_categoria)
 	SELECT image.id_image, pack.id_pack, OLD.id_categoria
 	FROM image
-    JOIN pack ON id_categoria = OLD.id_categoria;
+    JOIN pack ON pack.id_categoria = OLD.id_categoria;
 
 END //
 DELIMITER ;
+DELIMITER //
+CREATE TRIGGER del_category2
+AFTER DELETE ON categoria
+FOR EACH ROW
+BEGIN
 
+	INSERT INTO dat_del_category (id_img, id_pack, id_categoria)
+	SELECT image.id_image, pack.id_pack, OLD.id_categoria
+	FROM image
+    JOIN pack ON pack.id_categoria = OLD.id_categoria;
+
+END //
+DELIMITER ;
+DROP TRIGGER IF EXISTS del_category;
+
+-- delete from categoria where id_categoria = 2;
 
