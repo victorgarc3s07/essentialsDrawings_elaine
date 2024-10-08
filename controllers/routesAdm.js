@@ -234,22 +234,6 @@ const delPack = (req, res) => {
     })
 }
 
-const addOrder = (req, res) => { //corrigir
-    const {id_user, id_img, id_pack, id_payment} = req.body
-    db.query(
-        'INSERT INTO pedidos (id_user, id_img, id_pack, id_payment) VALUES (?, ?, ?, ?)', 
-        [id_user, id_img, id_pack, id_payment],
-        (err, results) => {
-            if(err){
-                console.error('Erro ao adicionar o pedido.', err)
-                res.status(500).send('Erro ao adicionar o pedido.')
-                return
-            }
-            res.status(201).send('Pedido adicionado!')
-        }
-    )
-}
-
 const addEmployee = (req, res) => {
     const {name, email, password, birth_date, position} = req.body;
     db.query('INSERT INTO employees (name, email, password, birth_date, position) VALUES (?, ?, ?, ?, ?)',
@@ -303,6 +287,22 @@ const editEmployee = (req, res) => {
         }
         res.send('Cargo atualizado com sucesso!')
     })
+}
+
+const addOrder = (req, res) => { //corrigir
+    const {id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment} = req.body
+    db.query(
+        'INSERT INTO pedidos (id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+        [id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment],
+        (err, results) => {
+            if(err){
+                console.error('Erro ao adicionar o pedido.', err)
+                res.status(500).send('Erro ao adicionar o pedido.')
+                return
+            }
+            res.status(201).send('Pedido adicionado!')
+        }
+    )
 }
 
 const users = (req, res) => {

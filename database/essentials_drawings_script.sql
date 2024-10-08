@@ -129,25 +129,14 @@ BEGIN
 
 	INSERT INTO dat_del_category (id_img, id_pack, id_categoria)
 	SELECT image.id_image, pack.id_pack, OLD.id_categoria
-	FROM image
-    JOIN pack ON pack.id_categoria = OLD.id_categoria;
+	FROM pack
+    JOIN image ON image.id_categoria = OLD.id_categoria
+    WHERE image.id_categoria = OLD.id_categoria AND pack.id_categoria = OLD.id_categoria;
 
 END //
 DELIMITER ;
-DELIMITER //
-CREATE TRIGGER del_category2
-AFTER DELETE ON categoria
-FOR EACH ROW
-BEGIN
 
-	INSERT INTO dat_del_category (id_img, id_pack, id_categoria)
-	SELECT image.id_image, pack.id_pack, OLD.id_categoria
-	FROM image
-    JOIN pack ON pack.id_categoria = OLD.id_categoria;
-
-END //
-DELIMITER ;
-DROP TRIGGER IF EXISTS del_category;
+-- DROP TRIGGER IF EXISTS del_category;
 
 -- delete from categoria where id_categoria = 2;
 
