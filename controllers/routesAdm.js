@@ -289,22 +289,46 @@ const editEmployee = (req, res) => {
     })
 }
 
-const addOrder = (req, res) => { //corrigir
-    const {id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment} = req.body
-    db.query(
-        'INSERT INTO pedidos (id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-        [id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment],
-        (err, results) => {
-            if(err){
-                console.error('Erro ao adicionar o pedido.', err)
-                res.status(500).send('Erro ao adicionar o pedido.')
-                return
+const addOrder = (req, res) => {
+    const { id_user, id_payment } = req.body;
+    db.query('SELECT * FROM carrinho', (err, results) => {
+      if (err) {
+        console.error('Erro ao buscar os itens do carrinho', err);
+        res.status(500).send('Erro ao buscar os itens do carrinho');
+        return
+      }
+      let price_total = 0;
+        results.forEach((item) => {
+            price_total += (Number(item.price_img).toFixed(2) || 0) + (Number(item.price_pack).toFixed(2) || 0);
+            console.log("Total de itens no carrinho:", results);
+            console.log("Preço total calculado:", price_total);
+            
+        });
+      // Inserir cada item do carrinho na tabela pedidos
+      results.forEach((item) => {
+        const {id_img, id_pack, price_img, price_pack} = item;
+        db.query(`INSERT INTO pedidos (id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment)
+          VALUES (?, ?, ?, ?, ?, ?, ?)`, [id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment],
+          (err, result) => {
+          if (err) {
+            console.error('Erro ao inserir os itens no pedido', err);
+            res.status(500).send('Erro ao inserir os itens no pedido');
+            return          
             }
-            res.status(201).send('Pedido adicionado!')
+        });
+      });
+      // Deletar os itens do carrinho após inserir no pedido
+      db.query('DELETE FROM carrinho', (err) => {
+        if (err) {
+          console.error('Erro ao deletar os itens do carrinho', err);
+          res.status(500).send('Erro ao deletar os itens do carrinho');
+          return ;
         }
-    )
-}
-
+        res.send('Pedido adicionado com sucesso!');
+      });
+    });
+  };
+  
 const users = (req, res) => {
     db.query('SELECT * FROM user', (err, results) => {
         if (err) {

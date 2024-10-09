@@ -15,10 +15,8 @@
  );
 
 create table carrinho (
-id_img int,
-id_pack int,
-price_img decimal (5,2),
-price_pack decimal (5,2)
+id_item int,
+price decimal (5,2)
 );
 
  create table pedidos (
@@ -139,4 +137,6 @@ DELIMITER ;
 -- DROP TRIGGER IF EXISTS del_category;
 
 -- delete from categoria where id_categoria = 2;
+-- delete from carrinho;
+
 
