@@ -124,7 +124,8 @@ WHERE pedidos.id_usuario = ?;`,[id_usuario] , (err, results) => {
 const filtroCategories = (req, res) => {
     const {id_categoria} = req.params
     const {id_usuario} = req.body
-    db.query('SELECT * FROM itens_pedido WHERE id_categoria = ? AND id_usuario = ?',
+    db.query(`SELECT * FROM itens_pedido INNER JOIN pedidos ON itens_pedido.id_pedido =
+        pedidos.id_pedido WHERE itens_pedido.id_categoria = ? AND pedidos.id_usuario = ?`,
         [id_categoria, id_usuario], (err, results) => {
         if (err) {
             console.error('Erro ao obter as categorias', err)
@@ -134,9 +135,12 @@ const filtroCategories = (req, res) => {
         res.json(results)
     })
 }
-//modificar pro usuario
-const images = (req, res) => {
-    db.query('SELECT * FROM image', (err, results) => {
+
+const filtroImages = (req, res) => {
+    const {id_usuario} = req.params
+    db.query(`SELECT itens_pedido.id_img FROM itens_pedido INNER JOIN pedidos ON itens_pedido.id_pedido =
+        pedidos.id_pedido WHERE pedidos.id_usuario = ?`,
+        [id_usuario], (err, results) => {
         if (err) {
             console.error('Erro ao obter as imagens', err)
             res.status(500).send('Erro ao obter as imagens')
@@ -145,14 +149,19 @@ const images = (req, res) => {
         res.json(results)
     })
 }
-//modificar pro usuario
-const packs = (req, res) => {
-    db.query('SELECT * FROM pack', (err, results) => {
+
+const filtroPacks = (req, res) => {
+    const {id_usuario} = req.body
+    console.log("id do usuario", id_usuario)
+    db.query(`SELECT itens_pedido.id_pack FROM itens_pedido INNER JOIN pedidos ON itens_pedido.id_pedido =
+        pedidos.id_pedido WHERE pedidos.id_usuario = ?`,
+        [id_usuario], (err, results) => {
         if (err) {
             console.error('Erro ao obter os packs', err)
             res.status(500).send('Erro ao obter os packs')
             return
         }
+        console.log("resultado da query", results)
         res.json(results)
     })
 }
@@ -164,7 +173,7 @@ module.exports = {
     dadosEmployee,
     editDatasEmployee,
     filtroCategories,
-    images,
-    packs,
+    filtroImages,
+    filtroPacks,
     ordersUser
 }

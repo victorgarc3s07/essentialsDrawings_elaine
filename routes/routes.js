@@ -47,6 +47,8 @@ router.get('/datas-user/:id', authMiddleware, routesUser.dadosUser)
 router.patch('/datas-user/:id', authMiddleware, routesUser.editDatasUser)
 router.get('/orders-user', authMiddleware, routesUser.ordersUser)
 router.get('/orders/filtro/:id_categoria', authMiddleware, routesUser.filtroCategories)
+router.get('/orders/filtro/images/:id_usuario', authMiddleware, routesUser.filtroImages)//retornou, mas quero tirar os NULL
+router.get('/orders/filtro/packs/:id_usuario', authMiddleware, routesUser.filtroPacks)//retornou, mas quero tirar os NULL
 router.get('/datas-employee/:id_employee', authMiddleware, routesUser.dadosEmployee)
 router.patch('/datas-employee/:id_employee', authMiddleware, routesUser.editDatasEmployee)
 

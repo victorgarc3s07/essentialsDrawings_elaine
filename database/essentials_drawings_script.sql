@@ -131,29 +131,9 @@ CREATE TABLE itens_pedido (
     FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
     FOREIGN KEY (id_img) REFERENCES image(id_image),   -- Supondo que você tenha uma tabela `imagens`
     FOREIGN KEY (id_pack) REFERENCES pack(id_pack),      -- Supondo que você tenha uma tabela `packs`
-    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria) on update cascade on delete set null
 );
-ALTER TABLE `essentialsdrawing_db`.`itens_pedido` 
-DROP FOREIGN KEY `itens_pedido_ibfk_4`;
-ALTER TABLE `essentialsdrawing_db`.`itens_pedido` 
-ADD CONSTRAINT `itens_pedido_ibfk_4`
-  FOREIGN KEY (`id_categoria`)
-  REFERENCES `essentialsdrawing_db`.`categoria` (`id_categoria`)
-  ON DELETE SET NULL
-  ON UPDATE CASCADE;
 
-SELECT 
-    pedidos.id_pedido,
-    pedidos.price_total,
-    pedidos.id_payment,
-    itens_pedido.id_item,
-    itens_pedido.id_img,
-    itens_pedido.id_pack,
-    itens_pedido.preco,
-    itens_pedido.id_categoria
-FROM pedidos
-JOIN itens_pedido ON pedidos.id_pedido = itens_pedido.id_pedido
-WHERE pedidos.id_usuario = 1;
 
 -- DROP TRIGGER IF EXISTS del_category;
 
