@@ -11,46 +11,32 @@
  id_user int primary key auto_increment,
  email varchar(255),
  password varchar(200),
- birth_date date
- );
-
-create table carrinho (
-id_item int,
-price decimal (5,2)
-);
-
- create table pedidos (
- id_pedido int primary key auto_increment,
- id_user int,
- id_img int,
- price_img decimal (5,2),
- id_pack int,
- price_pack decimal (5,2),
- price_total decimal (5,2),
- id_payment int
+ birth_date date,
+ resPassToken VARCHAR(255) NULL,
+ resPassExpires DATETIME NULL
  );
  
  create table image (
  id_image int primary key auto_increment,
  name varchar(255),
  description varchar(5000),
- price decimal(5,2),
- id_categoria int
+ id_categoria int,
+ price decimal(5,2)
  );
  
  create table pack (
-id_pack int primary key auto_increment,
-name varchar(255),
-description varchar(5000),
-price decimal(5,2),
-id_categoria int,
-id_image1 int,
-id_image2 int,
-id_image3 int,
-id_image4 int
+	id_pack int primary key auto_increment,
+	name varchar(255),
+	description varchar(5000),
+	id_categoria int,
+	id_image1 int,
+	id_image2 int,
+	id_image3 int,
+	id_image4 int,
+	price decimal(5,2)
  );
  
- create table categoria (
+create table categoria (
 id_categoria int primary key auto_increment,
 name varchar(255),
 description varchar(5000)
@@ -82,27 +68,6 @@ resPassExpires DATETIME NULL
  
 alter table dados_user
 add constraint fk_UserDados foreign key (id_user) references user (id);
- 
-ALTER TABLE dados_user
-ADD COLUMN resPassToken VARCHAR(255) NULL,
-ADD COLUMN resPassExpires DATETIME NULL; 
-
-CREATE INDEX idx_pack_column ON pack(price);
-CREATE INDEX idx_img_column ON image(price);
-
-alter table carrinho
-add constraint fk_ImgCart foreign key (id_img) references image (id_image),
-add constraint fk_PackCart foreign key (id_pack) references pack (id_pack),
-add constraint fk_PricePackcart foreign key (price_pack) references pack (price),
-add constraint fk_PriceImgcart foreign key (price_img) references image (price);
-
- alter table pedidos
- add constraint fk_UserPedidos foreign key (id_user) references user (id),
- add constraint fk_ImgPedidos foreign key (id_img) references image (id_image),
- add constraint fk_PackPedidos foreign key (id_pack) references pack (id_pack),
- add constraint fk_PayPedidos foreign key (id_payment) references payment (id_payment),
- add constraint fk_CartImgPricePedidos foreign key (price_img) references carrinho (price_img),
- add constraint fk_CartPackPricePedidos foreign key (price_pack) references carrinho (price_pack);
 
  alter table image
  add constraint fk_CategImg foreign key (id_categoria) references categoria (id_categoria)
@@ -134,9 +99,63 @@ BEGIN
 END //
 DELIMITER ;
 
+CREATE TABLE carrinho (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    id_img INT,
+    id_pack INT,
+    tipo ENUM('imagem', 'pack'),
+    id_categoria INT,
+    preco DECIMAL(10, 2),
+    FOREIGN KEY (id_img) REFERENCES image(id_image),   -- Supondo que você tenha uma tabela `imagens`
+	FOREIGN KEY (id_usuario) REFERENCES user(id),   -- Supondo que você tenha uma tabela `imagens`
+    FOREIGN KEY (id_pack) REFERENCES pack(id_pack),      -- Supondo que você tenha uma tabela `packs`
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
+);
+
+CREATE TABLE pedidos (
+    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    id_payment INT,
+    price_total DECIMAL(10, 2),
+    FOREIGN KEY (id_usuario) REFERENCES user(id), -- Supondo que você tenha uma tabela `usuarios`
+    FOREIGN KEY (id_payment) REFERENCES payment(id_payment)  -- Supondo que você tenha uma tabela `pagamentos`
+);
+CREATE TABLE itens_pedido (
+    id_pedido INT,
+    id_item INT,
+    id_img INT,
+    id_pack INT,
+    id_categoria INT,
+    preco DECIMAL(10, 2),
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
+    FOREIGN KEY (id_img) REFERENCES image(id_image),   -- Supondo que você tenha uma tabela `imagens`
+    FOREIGN KEY (id_pack) REFERENCES pack(id_pack),      -- Supondo que você tenha uma tabela `packs`
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
+);
+ALTER TABLE `essentialsdrawing_db`.`itens_pedido` 
+DROP FOREIGN KEY `itens_pedido_ibfk_4`;
+ALTER TABLE `essentialsdrawing_db`.`itens_pedido` 
+ADD CONSTRAINT `itens_pedido_ibfk_4`
+  FOREIGN KEY (`id_categoria`)
+  REFERENCES `essentialsdrawing_db`.`categoria` (`id_categoria`)
+  ON DELETE SET NULL
+  ON UPDATE CASCADE;
+
+SELECT 
+    pedidos.id_pedido,
+    pedidos.price_total,
+    pedidos.id_payment,
+    itens_pedido.id_item,
+    itens_pedido.id_img,
+    itens_pedido.id_pack,
+    itens_pedido.preco,
+    itens_pedido.id_categoria
+FROM pedidos
+JOIN itens_pedido ON pedidos.id_pedido = itens_pedido.id_pedido
+WHERE pedidos.id_usuario = 1;
+
 -- DROP TRIGGER IF EXISTS del_category;
 
 -- delete from categoria where id_categoria = 2;
--- delete from carrinho;
-
 

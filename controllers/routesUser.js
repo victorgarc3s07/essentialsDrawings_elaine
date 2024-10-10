@@ -14,27 +14,7 @@ const dadosUser = (req, res) => {
         res.json(results)
     })
 }
-// const editDatasUser = (req, res) => {
-//     const {id} = req.params;
-//     const fields = req.body;
-//     const query = [];
-//     const values = [];
-//     for (const [key, value] of Object.entries(fields)) {
-//         query.push(`${key} = ?`);
-//         values.push(value);
-//     }
-//     values.push(id);
-//     db.query(`UPDATE user SET ${query.join(', ')} WHERE id = ?`, values,
-//         (err, results) => {
-//             if(err) {
-//                 console.error('Erro ao atualizar a categoria', err)
-//                 res.status(500).send('Erro ao atualizar a categoria')
-//                 return
-//             }
-//             res.send('Categoria atualizada com sucesso!')
-//         }
-//     );
-// };
+
 const editDatasUser = (req, res) => {
     const { id } = req.params;
     const fields = req.body;
@@ -117,9 +97,21 @@ const editDatasEmployee = (req, res) => {
     );
     res.send('Dados atualizados com sucesso!');
 };
-//modificar pro usuario
-const orders = (req, res) => {
-    db.query('SELECT * FROM pedidos', (err, results) => {
+
+const ordersUser = (req, res) => {
+    const {id_usuario} = req.body
+    db.query(`SELECT 
+    pedidos.id_pedido,
+    pedidos.price_total,
+    pedidos.id_payment,
+    itens_pedido.id_item,
+    itens_pedido.id_img,
+    itens_pedido.id_pack,
+    itens_pedido.preco,
+    itens_pedido.id_categoria
+FROM pedidos
+JOIN itens_pedido ON pedidos.id_pedido = itens_pedido.id_pedido
+WHERE pedidos.id_usuario = ?;`,[id_usuario] , (err, results) => {
         if (err) {
             console.error('Erro ao obter os pedidos processados', err)
             res.status(500).send('Erro ao obter os pedidos processados')
@@ -128,9 +120,12 @@ const orders = (req, res) => {
         res.json(results)
     })
 }
-//modificar pro usuario
-const categories = (req, res) => {
-    db.query('SELECT * FROM categoria', (err, results) => {
+
+const filtroCategories = (req, res) => {
+    const {id_categoria} = req.params
+    const {id_usuario} = req.body
+    db.query('SELECT * FROM itens_pedido WHERE id_categoria = ? AND id_usuario = ?',
+        [id_categoria, id_usuario], (err, results) => {
         if (err) {
             console.error('Erro ao obter as categorias', err)
             res.status(500).send('Erro ao obter as categorias')
@@ -168,8 +163,8 @@ module.exports = {
     editDatasUser,
     dadosEmployee,
     editDatasEmployee,
-    categories,
+    filtroCategories,
     images,
     packs,
-    orders
+    ordersUser
 }

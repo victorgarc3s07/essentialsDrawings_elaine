@@ -289,46 +289,110 @@ const editEmployee = (req, res) => {
     })
 }
 
-const addOrder = (req, res) => {
-    const { id_user, id_payment } = req.body;
-    db.query('SELECT * FROM carrinho', (err, results) => {
-      if (err) {
-        console.error('Erro ao buscar os itens do carrinho', err);
-        res.status(500).send('Erro ao buscar os itens do carrinho');
-        return
-      }
-      let price_total = 0;
-        results.forEach((item) => {
-            price_total += (Number(item.price_img).toFixed(2) || 0) + (Number(item.price_pack).toFixed(2) || 0);
-            console.log("Total de itens no carrinho:", results);
-            console.log("Preço total calculado:", price_total);
+// const addOrder = (req, res) => {
+//     const { id_user, id_payment } = req.body;
+//     db.query('SELECT * FROM carrinho', (err, results) => {
+//       if (err) {
+//         console.error('Erro ao buscar os itens do carrinho', err);
+//         res.status(500).send('Erro ao buscar os itens do carrinho');
+//         return
+//       }
+//       let price_total = 0;
+//         results.forEach((item) => {
+//             price_total += (Number(item.price_img).toFixed(2) || 0) + (Number(item.price_pack).toFixed(2) || 0);
+//             console.log("Total de itens no carrinho:", results);
+//             console.log("Preço total calculado:", price_total);
             
-        });
-      // Inserir cada item do carrinho na tabela pedidos
-      results.forEach((item) => {
-        const {id_img, id_pack, price_img, price_pack} = item;
-        db.query(`INSERT INTO pedidos (id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment)
-          VALUES (?, ?, ?, ?, ?, ?, ?)`, [id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment],
-          (err, result) => {
-          if (err) {
-            console.error('Erro ao inserir os itens no pedido', err);
-            res.status(500).send('Erro ao inserir os itens no pedido');
-            return          
-            }
-        });
-      });
-      // Deletar os itens do carrinho após inserir no pedido
-      db.query('DELETE FROM carrinho', (err) => {
-        if (err) {
-          console.error('Erro ao deletar os itens do carrinho', err);
-          res.status(500).send('Erro ao deletar os itens do carrinho');
-          return ;
-        }
-        res.send('Pedido adicionado com sucesso!');
-      });
-    });
-  };
+//         });
+//       // Inserir cada item do carrinho na tabela pedidos
+//       results.forEach((item) => {
+//         const {id_img, id_pack, price_img, price_pack} = item;
+//         db.query(`INSERT INTO pedidos (id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment)
+//           VALUES (?, ?, ?, ?, ?, ?, ?)`, [id_user, id_img, price_img, id_pack, price_pack, price_total, id_payment],
+//           (err, result) => {
+//           if (err) {
+//             console.error('Erro ao inserir os itens no pedido', err);
+//             res.status(500).send('Erro ao inserir os itens no pedido');
+//             return          
+//             }
+//         });
+//       });
+//       // Deletar os itens do carrinho após inserir no pedido
+//       db.query('DELETE FROM carrinho', (err) => {
+//         if (err) {
+//           console.error('Erro ao deletar os itens do carrinho', err);
+//           res.status(500).send('Erro ao deletar os itens do carrinho');
+//           return ;
+//         }
+//         res.send('Pedido adicionado com sucesso!');
+//       });
+//     });
+//   };
   
+const addOrder = (req, res) => {
+    const { id_usuario, id_payment } = req.body;
+    
+    // Calcula o total de preços dos itens no carrinho
+    const calcTotalSql = 'SELECT SUM(preco) AS price_total FROM carrinho WHERE id_usuario = ?';
+    db.query(calcTotalSql, [id_usuario], (err, totalResult) => {
+        if (err) {
+            console.error('Erro ao somar o total dos itens do carrinho', err);
+            res.status(500).send('Erro ao somar o total dos itens do carrinho');
+            return
+        }
+
+        const price_total = totalResult[0].price_total;
+
+        // Insere o pedido
+        const pedidoSql = 'INSERT INTO pedidos (id_usuario, price_total, id_payment) VALUES (?, ?, ?)';
+        db.query(pedidoSql, [id_usuario, price_total, id_payment], (err, result) => {
+            if (err) {
+                console.error('Erro ao inserir o pedido', err);
+                res.status(500).send('Erro ao inserir o pedido');
+                return
+            }
+
+            const id_pedido = result.insertId;
+
+            // Insere os itens do carrinho no itens_pedido
+            const itensSql = `
+                INSERT INTO itens_pedido (id_pedido, id_item, id_img, id_pack, preco, id_categoria)
+                SELECT ?, id, id_img, id_pack, preco, id_categoria
+                FROM carrinho
+                WHERE id_usuario = ?`;
+            db.query(itensSql, [id_pedido, id_usuario], (err, result) => {
+                if (err) {
+                    console.error('Erro ao inserir os itens do carrinho', err);
+                    res.status(500).send('Erro ao inserir os itens do carrinho');
+                    return
+                }
+
+                // Deleta o carrinho após criar o pedido
+                const deleteCarrinhoSql = 'DELETE FROM carrinho WHERE id_usuario = ?';
+                db.query(deleteCarrinhoSql, [id_usuario], (err, result) => {
+                    if (err) {
+                        console.error('Erro ao deletar os itens do carrinho', err);
+                        res.status(500).send('Erro ao deletar os itens do carrinho');
+                        return
+                    }
+                    res.send('Pedido adicionado com sucesso!')
+                });
+            });
+        });
+    });
+};
+
+const orders = (req, res) => {
+    db.query('SELECT * FROM pedidos', (err, results) => {
+        if (err) {
+            console.error('Erro ao obter os pedidos processados', err)
+            res.status(500).send('Erro ao obter os pedidos processados')
+            return
+        }
+        res.json(results)
+    })
+}
+
 const users = (req, res) => {
     db.query('SELECT * FROM user', (err, results) => {
         if (err) {
@@ -340,16 +404,6 @@ const users = (req, res) => {
     })
 }
 
-const orders = (req, res) => { //corrigir
-    db.query('SELECT * FROM pedidos', (err, results) => {
-        if (err) {
-            console.error('Erro ao obter os pedidos processados', err)
-            res.status(500).send('Erro ao obter os pedidos processados')
-            return
-        }
-        res.json(results)
-    })
-}
 const categoriaDeletada = (req, res) => {
     db.query('SELECT * FROM dat_del_category', (err, results) => {
         if (err) {

@@ -1,11 +1,9 @@
 const db = require('../config/db')
 
 const addCart = (req, res) => {
-    const {id_img, id_pack, price_img, price_pack} = req.body
-    db.query(
-        'INSERT INTO carrinho (id_img, id_pack, price_img, price_pack) VALUES (?, ?, ?, ?)', 
-        [id_img, id_pack, price_img, price_pack],
-        (err, results) => {
+    const { id_usuario, id_img, id_pack, preco, tipo, id_categoria } = req.body;
+    db.query('INSERT INTO carrinho (id_usuario, id_img, id_pack, preco, tipo, id_categoria) VALUES (?, ?, ?, ?, ?, ?)',
+        [id_usuario, id_img, id_pack, preco, tipo, id_categoria], (err, results) => {
             if(err){
                 console.error('Erro ao adicionar o item.', err)
                 res.status(500).send('Erro ao adicionar o item.')
@@ -27,9 +25,20 @@ const cart = (req, res) => {
     })
 }
 
-//deletar itens do cart
+const delItemCart = (req, res) => {
+    const {id} = req.params
+    db.query ('DELETE FROM carrinho WHERE id = ?', [id], (err, results) => {
+        if(err) {
+            console.error('Erro ao excluir o item do carrinho', err)
+            res.status(500).send('Erro ao excluir o item do carrinho')
+            return
+        }
+        res.status(201).send('Item excluido do carrinho!')
+    })
+}
 
 module.exports = {
     addCart,
-    cart
+    cart,
+    delItemCart
 }

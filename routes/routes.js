@@ -31,20 +31,22 @@ router.get('/employees', authMiddleware, routesAdm.employees)
 router.patch('/edit-employee/:id_employee', authMiddleware, routesAdm.editEmployee)
 router.delete('/employee/:id_employee', authMiddleware, routesAdm.delEmployee)
 
-router.post('/add-order', authMiddleware, routesAdm.addOrder)//*
-router.get('/orders', authMiddleware, routesAdm.orders) //corrigir
+router.post('/add-order', authMiddleware, routesAdm.addOrder)
+router.get('/orders', authMiddleware, routesAdm.orders)
 //deletar order ?
 //patch order ?
 
 router.get('/users', authMiddleware, routesAdm.users)
 //deletar user por adm ou user ?
 
-router.post('/addcart', authMiddleware, routesCart.addCart)//*
-router.get('/cart', authMiddleware, routesCart.cart)//*
-//deletar itens do cart
+router.post('/addcart', authMiddleware, routesCart.addCart)
+router.get('/cart', authMiddleware, routesCart.cart)
+router.delete('/cart/:id', authMiddleware, routesCart.delItemCart)
 
 router.get('/datas-user/:id', authMiddleware, routesUser.dadosUser)
 router.patch('/datas-user/:id', authMiddleware, routesUser.editDatasUser)
+router.get('/orders-user', authMiddleware, routesUser.ordersUser)
+router.get('/orders/filtro/:id_categoria', authMiddleware, routesUser.filtroCategories)
 router.get('/datas-employee/:id_employee', authMiddleware, routesUser.dadosEmployee)
 router.patch('/datas-employee/:id_employee', authMiddleware, routesUser.editDatasEmployee)
 
