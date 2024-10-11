@@ -39,6 +39,10 @@ router.get('/orders', authMiddleware, routesAdm.orders)
 router.get('/users', authMiddleware, routesAdm.users)
 //deletar user por adm ou user ?
 
+router.get('/filtro/:id_categoria', authMiddleware, routesAdm.filtroCategories)
+router.get('/filtro/images/all', authMiddleware, routesAdm.filtroImages)
+router.get('/filtro/packs/all', authMiddleware, routesAdm.filtroPacks)
+
 router.post('/addcart', authMiddleware, routesCart.addCart)
 router.get('/cart', authMiddleware, routesCart.cart)
 router.delete('/cart/:id', authMiddleware, routesCart.delItemCart)
@@ -47,8 +51,8 @@ router.get('/datas-user/:id', authMiddleware, routesUser.dadosUser)
 router.patch('/datas-user/:id', authMiddleware, routesUser.editDatasUser)
 router.get('/orders-user', authMiddleware, routesUser.ordersUser)
 router.get('/orders/filtro/:id_categoria', authMiddleware, routesUser.filtroCategories)
-router.get('/orders/filtro/images/:id_usuario', authMiddleware, routesUser.filtroImages)//retornou, mas quero tirar os NULL
-router.get('/orders/filtro/packs/:id_usuario', authMiddleware, routesUser.filtroPacks)//retornou, mas quero tirar os NULL
+router.get('/orders/filtro/images/:id_usuario', authMiddleware, routesUser.filtroImages)
+router.get('/orders/filtro/packs/:id_usuario', authMiddleware, routesUser.filtroPacks)
 router.get('/datas-employee/:id_employee', authMiddleware, routesUser.dadosEmployee)
 router.patch('/datas-employee/:id_employee', authMiddleware, routesUser.editDatasEmployee)
 

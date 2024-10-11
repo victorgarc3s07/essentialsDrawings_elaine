@@ -129,8 +129,8 @@ const filtroCategories = (req, res) => {
         AND pedidos.id_usuario = ?`,
         [id_categoria, id_usuario], (err, results) => {
         if (err) {
-            console.error('Erro ao obter as categorias', err)
-            res.status(500).send('Erro ao obter as categorias')
+            console.error('Erro ao filtrar por categoria', err)
+            res.status(500).send('Erro ao filtrar por categoria')
             return
         }
         res.json(results)

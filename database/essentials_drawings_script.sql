@@ -134,7 +134,6 @@ CREATE TABLE itens_pedido (
     FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria) on update cascade on delete set null
 );
 
-
 -- DROP TRIGGER IF EXISTS del_category;
 
 -- delete from categoria where id_categoria = 2;
