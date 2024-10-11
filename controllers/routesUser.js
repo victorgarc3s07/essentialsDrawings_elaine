@@ -124,8 +124,9 @@ WHERE pedidos.id_usuario = ?;`,[id_usuario] , (err, results) => {
 const filtroCategories = (req, res) => {
     const {id_categoria} = req.params
     const {id_usuario} = req.body
-    db.query(`SELECT * FROM itens_pedido INNER JOIN pedidos ON itens_pedido.id_pedido =
-        pedidos.id_pedido WHERE itens_pedido.id_categoria = ? AND pedidos.id_usuario = ?`,
+    db.query(`SELECT itens_pedido.id_img, itens_pedido.id_pack FROM itens_pedido INNER JOIN 
+        pedidos ON itens_pedido.id_pedido = pedidos.id_pedido WHERE itens_pedido.id_categoria = ? 
+        AND pedidos.id_usuario = ?`,
         [id_categoria, id_usuario], (err, results) => {
         if (err) {
             console.error('Erro ao obter as categorias', err)
@@ -139,7 +140,7 @@ const filtroCategories = (req, res) => {
 const filtroImages = (req, res) => {
     const {id_usuario} = req.params
     db.query(`SELECT itens_pedido.id_img FROM itens_pedido INNER JOIN pedidos ON itens_pedido.id_pedido =
-        pedidos.id_pedido WHERE pedidos.id_usuario = ?`,
+        pedidos.id_pedido WHERE pedidos.id_usuario = ? AND itens_pedido.id_img IS NOT NULL`,
         [id_usuario], (err, results) => {
         if (err) {
             console.error('Erro ao obter as imagens', err)
@@ -151,17 +152,15 @@ const filtroImages = (req, res) => {
 }
 
 const filtroPacks = (req, res) => {
-    const {id_usuario} = req.body
-    console.log("id do usuario", id_usuario)
+    const {id_usuario} = req.params
     db.query(`SELECT itens_pedido.id_pack FROM itens_pedido INNER JOIN pedidos ON itens_pedido.id_pedido =
-        pedidos.id_pedido WHERE pedidos.id_usuario = ?`,
+        pedidos.id_pedido WHERE pedidos.id_usuario = ? AND itens_pedido.id_pack IS NOT NULL`,
         [id_usuario], (err, results) => {
         if (err) {
             console.error('Erro ao obter os packs', err)
             res.status(500).send('Erro ao obter os packs')
             return
         }
-        console.log("resultado da query", results)
         res.json(results)
     })
 }
