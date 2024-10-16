@@ -104,7 +104,6 @@ CREATE TABLE carrinho (
     id_usuario INT,
     id_img INT,
     id_pack INT,
-    tipo ENUM('imagem', 'pack'),
     id_categoria INT,
     preco DECIMAL(10, 2),
     FOREIGN KEY (id_img) REFERENCES image(id_image),   -- Supondo que você tenha uma tabela `imagens`
@@ -134,7 +133,4 @@ CREATE TABLE itens_pedido (
     FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria) on update cascade on delete set null
 );
 
--- DROP TRIGGER IF EXISTS del_category;
-
--- delete from categoria where id_categoria = 2;
-
+INSERT INTO employees (name, email, password, birth_date, position) VALUES ("admin1", "ereinlima@gmail.com", "@admin1", "2000-01-01", "ADMIN");

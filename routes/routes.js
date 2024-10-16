@@ -27,17 +27,14 @@ router.delete('/pack/:id_pack', authMiddleware, routesAdm.delPack)
 
 router.get('/categoriesDel', authMiddleware, routesAdm.categoriaDeletada)
 
-router.get('/employees', authMiddleware, routesAdm.employees)
-router.patch('/edit-employee/:id_employee', authMiddleware, routesAdm.editEmployee)
-router.delete('/employee/:id_employee', authMiddleware, routesAdm.delEmployee)
+router.get('/datas-employee/:id_employee', authMiddleware, routesAdm.dadosEmployee)
+router.patch('/datas-employee/:id_employee', authMiddleware, routesAdm.editDatasEmployee)
 
 router.post('/add-order', authMiddleware, routesAdm.addOrder)
 router.get('/orders', authMiddleware, routesAdm.orders)
-//deletar order ?
-//patch order ?
 
 router.get('/users', authMiddleware, routesAdm.users)
-//deletar user por adm ou user ?
+router.get('/search', authMiddleware, routesAdm.search)
 
 router.get('/filtro/:id_categoria', authMiddleware, routesAdm.filtroCategories)
 router.get('/filtro/images/all', authMiddleware, routesAdm.filtroImages)
@@ -53,7 +50,5 @@ router.get('/orders-user', authMiddleware, routesUser.ordersUser)
 router.get('/orders/filtro/:id_categoria', authMiddleware, routesUser.filtroCategories)
 router.get('/orders/filtro/images/:id_usuario', authMiddleware, routesUser.filtroImages)
 router.get('/orders/filtro/packs/:id_usuario', authMiddleware, routesUser.filtroPacks)
-router.get('/datas-employee/:id_employee', authMiddleware, routesUser.dadosEmployee)
-router.patch('/datas-employee/:id_employee', authMiddleware, routesUser.editDatasEmployee)
 
 module.exports = router

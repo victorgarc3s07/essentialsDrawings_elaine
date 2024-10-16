@@ -1,33 +1,18 @@
 const db = require('../config/db')
 
-const addCategory = (req, res) => {
-    const {name, description} = req.body
-    db.query(
-        'INSERT INTO categoria (name, description) VALUES (?, ?)',
-        [name, description],
-        (err, results) => {
-            if(err) {console.error('Erro ao adicionar a categoria.', err)
-                res.status(500).send('Erro ao adicionar a categoria.')
-                return
-            }
-            res.status(201).send('Categoria adicionada!')
-        }
-    )
-}
-
-const categories = (req, res) => {
-    db.query('SELECT * FROM categoria', (err, results) => {
+const dadosEmployee = (req, res) => {
+    const { id_employee } = req.params;
+    db.query(`SELECT id_employee, name, password, birth_date, position
+        FROM employees WHERE id_employee = ?`, [id_employee], (err, results) => {
         if (err) {
-            console.error('Erro ao obter as categorias', err)
-            res.status(500).send('Erro ao obter as categorias')
-            return
+            console.error('Erro ao obter seus dados.', err);
+            return res.status(500).send('Erro ao obter seus dados.');
         }
-        res.json(results)
-    })
-}
-
-const editCategory = (req, res) => {
-    const {id_categoria} = req.params;
+        res.json(results);
+    });
+};
+const editDatasEmployee = (req, res) => {
+    const { id_employee } = req.params;
     const fields = req.body;
     const query = [];
     const values = [];
@@ -35,377 +20,439 @@ const editCategory = (req, res) => {
         query.push(`${key} = ?`);
         values.push(value);
     }
+    values.push(id_employee);
+    db.query(`UPDATE employees SET ${query.join(', ')} WHERE id_employee = ?`, values,
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao atualizar os dados', err);
+                return res.status(500).send('Erro ao atualizar os dados');
+            }
+        }
+    );
+    res.send('Dados atualizados com sucesso!');
+};
+
+const addCategory = (req, res) => {
+    const { name, description } = req.body;
+    db.query('SELECT * FROM categoria WHERE name = ? AND description = ?', [name, description],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao verificar a categoria:', err);
+                return res.status(500).send('Erro ao verificar a categoria');
+            };
+            if (results.length > 0) {
+                return res.status(400).send('Categoria já registrada');
+            };
+        }
+    );
+    db.query('INSERT INTO categoria (name, description) VALUES (?, ?)', [name, description],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao adicionar a categoria.', err);
+                return res.status(500).send('Erro ao adicionar a categoria.');
+            };
+            res.status(201).send('Categoria adicionada!');
+        }
+    );
+};
+
+const categories = (req, res) => {
+    db.query('SELECT * FROM categoria', (err, results) => {
+        if (err) {
+            console.error('Erro ao obter as categorias', err);
+            return res.status(500).send('Erro ao obter as categorias');
+        };
+        res.json(results);
+    });
+};
+
+const editCategory = (req, res) => {
+    const { id_categoria } = req.params;
+    const fields = req.body;
+    const query = [];
+    const values = [];
+    for (const [key, value] of Object.entries(fields)) {
+        query.push(`${key} = ?`);
+        values.push(value);
+    };
     values.push(id_categoria);
     db.query(`UPDATE categoria SET ${query.join(', ')} WHERE id_categoria = ?`, values,
         (err, results) => {
-            if(err) {
-                console.error('Erro ao atualizar a categoria', err)
-                res.status(500).send('Erro ao atualizar a categoria')
-                return
-            }
-            res.send('Categoria atualizada com sucesso!')
+            if (err) {
+                console.error('Erro ao atualizar a categoria', err);
+                return res.status(500).send('Erro ao atualizar a categoria');
+            };
+            if (results.affectedRows === 0) {
+                return res.status(404).send('Categoria não encontrada');
+            };
+            res.send('Categoria atualizada com sucesso!');
         }
     );
 };
 
 const delCategory = (req, res) => {
-    const {id_categoria} = req.params
-    db.query ('DELETE FROM categoria WHERE id_categoria = ?', [id_categoria], (err, results) => {
-        if(err) {
-            console.error('Erro ao deletar a categoria', err)
-            res.status(500).send('Erro ao deletar a categoria')
-            return
+    const { id_categoria } = req.params;
+    db.query('DELETE FROM categoria WHERE id_categoria = ?', [id_categoria],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao deletar a categoria', err);
+                return res.status(500).send('Erro ao deletar a categoria');
+            };
+            if (results.affectedRows === 0) {
+                return res.status(404).send('Categoria não encontrada');
+            };
+            res.send('Categoria deletada.');
         }
-        res.send('Categoria deletada.')
-    })
-}
+    );
+};
 
 const addPayment = (req, res) => {
-    const {name} = req.body
-    db.query('INSERT INTO payment (name) VALUES (?)',
-        [name],
+    const { name } = req.body;
+    db.query('SELECT * FROM payment WHERE name = ?', [name],
         (err, results) => {
-            if(err){
-                console.error('Erro ao adicionar o método de pagamento.', err)
-                res.status(500).send('Erro ao adicionar o método de pagamento.')
-                return
-            }
-            res.status(201).send('Método de pagamento adicionado!')
+            if (err) {
+                console.error('Erro ao verificar o método de pagamento:', err);
+                return res.status(500).send('Erro ao verificar o método de pagamento');
+            };
+            if (results.length > 0) {
+                return res.status(400).send('Método de pagamento já registrado');
+            };
         }
-    )
-}
+    );
+    db.query('INSERT INTO payment (name) VALUES (?)', [name],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao adicionar o método de pagamento.', err);
+                return res.status(500).send('Erro ao adicionar o método de pagamento.');
+            };
+            res.status(201).send('Método de pagamento adicionado!');
+        }
+    );
+};
 
 const payments = (req, res) => {
     db.query('SELECT * FROM payment', (err, results) => {
-        if(err) {
-            console.error('Erro ao obter métodos de pagamento', err)
-            res.status(500).send('Erro ao obter métodos de pagamento')
-            return
+        if (err) {
+            console.error('Erro ao obter métodos de pagamento', err);
+            return res.status(500).send('Erro ao obter métodos de pagamento');
         }
-        res.json(results)
-    })
-}
+        res.json(results);
+    });
+};
 
 const editPayment = (req, res) => {
-    const {id_payment} = req.params;
+    const { id_payment } = req.params;
     const fields = req.body;
     const query = [];
     const values = [];
     for (const [key, value] of Object.entries(fields)) {
         query.push(`${key} = ?`);
         values.push(value);
-    }
+    };
     values.push(id_payment);
-    db.query(`UPDATE payment SET ${query.join(', ')} WHERE id_payment = ?`, values, (err, results) => {
-        if(err){
-            console.error('Erro ao atualizar a categoria', err)
-            res.status(500).send('Erro ao atualizar a categoria')
-            return
+    db.query(`UPDATE payment SET ${query.join(', ')} WHERE id_payment = ?`, values,
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao atualizar a categoria', err);
+                return res.status(500).send('Erro ao atualizar a categoria');
+            };
+            if (results.affectedRows === 0) {
+                return res.status(404).send('Categoria não encontrada');
+            };
+            res.send('Método de pagamento atualizado com sucesso!');
         }
-        res.send('Método de pagamento atualizado com sucesso!')
-    })
-}
+    );
+};
 
 const delPayment = (req, res) => {
-    const {id_payment} = req.params
-    db.query ('DELETE FROM payment WHERE id_payment = ?', [id_payment], (err, results) => {
-        if(err) {
-            console.error('Erro ao deletar o método de pagamento', err)
-            res.status(500).send('Erro ao deletar o método de pagamento')
-            return
+    const { id_payment } = req.params;
+    db.query('DELETE FROM payment WHERE id_payment = ?', [id_payment],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao deletar o método de pagamento', err);
+                return res.status(500).send('Erro ao deletar o método de pagamento');
+            }
+            if (results.affectedRows === 0) {
+                return res.status(404).send('Categoria não encontrada');
+            };
+            res.send('Método de pagamento deletado.');
         }
-        res.send('Método de pagamento deletado.')
-    })
-}
+    );
+};
 
 const addImg = (req, res) => {
-    const {name, description, price, id_categoria} = req.body
-    db.query(
-        'INSERT INTO image (name, description, price, id_categoria) VALUES (?, ?, ?, ?)',
+    const { name, description, price, id_categoria } = req.body;
+    db.query('SELECT * FROM image WHERE name = ? AND description = ? AND price = ? AND id_categoria = ?',
         [name, description, price, id_categoria],
         (err, results) => {
-            if(err) {console.error('Erro ao adicionar a imagem.', err)
-                res.status(500).send('Erro ao adicionar a imagem.')
-                return
-            }
-            res.status(201).send('Imagem adicionada!')
+            if (err) {
+                console.error('Erro ao verificar as imagens:', err);
+                return res.status(500).send('Erro ao verificar as imagens');
+            };
+            if (results.length > 0) {
+                return res.status(400).send('Imagem já cadastrada');
+            };
         }
-    )
-}
+    );
+    db.query('INSERT INTO image (name, description, price, id_categoria) VALUES (?, ?, ?, ?)',
+        [name, description, price, id_categoria],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao adicionar a imagem.', err);
+                return res.status(500).send('Erro ao adicionar a imagem.');
+            };
+            res.status(201).send('Imagem adicionada!');
+        }
+    );
+};
 
 const images = (req, res) => {
     db.query('SELECT * FROM image', (err, results) => {
         if (err) {
-            console.error('Erro ao obter as imagens', err)
-            res.status(500).send('Erro ao obter as imagens')
-            return
-        }
-        res.json(results)
-    })
-}
+            console.error('Erro ao obter as imagens', err);
+            return res.status(500).send('Erro ao obter as imagens');
+        };
+        res.json(results);
+    });
+};
 
 const editImg = (req, res) => {
-    const {id_image} = req.params;
+    const { id_image } = req.params;
     const fields = req.body;
     const query = [];
     const values = [];
-    for (const [key, value] of Object.entries(fields)){
+    for (const [key, value] of Object.entries(fields)) {
         query.push(`${key} = ?`);
         values.push(value);
-    }
+    };
     values.push(id_image);
-    db.query(`UPDATE image SET ${query.join(', ')} WHERE id_image = ?`, values, (err, results) => {
-        if(err){
-            console.error('Erro ao atualizar a imagem.', err)
-            res.status(500).send('Erro ao atualizar a imagem.')
-            return;
+    db.query(`UPDATE image SET ${query.join(', ')} WHERE id_image = ?`, values,
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao atualizar a imagem.', err);
+                return res.status(500).send('Erro ao atualizar a imagem.');
+            };
+            if (results.affectedRows === 0) {
+                return res.status(404).send('Imagem não encontrada.')
+            };
+            res.send('Imagem atualizada com sucesso!')
         }
-        res.send('Imagem atualizada com sucesso!')
-    })
-}
+    );
+};
 
 const delImg = (req, res) => {
-    const {id_image} = req.params;
-    db.query('DELETE FROM image WHERE id_image = ?', [id_image], (err, results) => {
-        if(err) {
-            console.error('Erro ao deletar a imagem.', err);
-            res.status(500).send('Erros ao deletar a imagem.');
-            return;
+    const { id_image } = req.params;
+    db.query('DELETE FROM image WHERE id_image = ?', [id_image],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao deletar a imagem.', err);
+                return res.status(500).send('Erro ao deletar a imagem.');
+            };
+            if (results.affectedRows === 0) {
+                return res.status(404).send('Imagem não encontrada.')
+            };
+            res.send('Imagem deletada com sucesso!')
         }
-        res.send('Imagem deletada com sucesso!')
-    })
-}
+    );
+};
 
 const addPack = (req, res) => {
-    const {name, description, price, id_categoria, id_image1, id_image2, id_image3, id_image4} = req.body
-    db.query(
-        'INSERT INTO pack (name, description, price, id_categoria, id_image1, id_image2, id_image3, id_image4) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [name, description, price, id_categoria, id_image1, id_image2, id_image3, id_image4],
+    const { name, description, price, id_categoria, id_image1, id_image2, id_image3, id_image4 } = req.body;
+    db.query('SELECT * FROM pack WHERE name = ? AND description = ? AND price = ? AND id_categoria = ?',
+        [name, description, price, id_categoria],
         (err, results) => {
-            if(err) {console.error('Erro ao adicionar o pack.', err)
-                res.status(500).send('Erro ao adicionar o pack.')
-                return
-            }
+            if (err) {
+                console.error('Erro ao verificar o pack:', err);
+                return res.status(500).send('Erro ao verificar o pack');
+            };
+            if (results.length > 0) {
+                return res.status(400).send('Pack já cadastrado');
+            };
+        }
+    );
+    db.query(`INSERT INTO pack (name, description, price, id_categoria, id_image1, id_image2, id_image3, id_image4) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [name, description, price, id_categoria, id_image1, id_image2, id_image3, id_image4],
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao adicionar o pack.', err);
+                return res.status(500).send('Erro ao adicionar o pack.');
+            };
             res.status(201).send('Pack adicionado!')
         }
-    )
-}
+    );
+};
 
 const packs = (req, res) => {
     db.query('SELECT * FROM pack', (err, results) => {
         if (err) {
-            console.error('Erro ao obter os packs', err)
-            res.status(500).send('Erro ao obter os packs')
-            return
+            console.error('Erro ao obter os packs', err);
+            return res.status(500).send('Erro ao obter os packs');
         }
-        res.json(results)
-    })
-}
+        res.json(results);
+    });
+};
 
 const editPack = (req, res) => {
-    const {id_pack} = req.params;
+    const { id_pack } = req.params;
     const fields = req.body;
     const query = [];
     const values = [];
-    for(const [key, value] of Object.entries(fields)){
+    for (const [key, value] of Object.entries(fields)) {
         query.push(`${key} = ?`);
         values.push(value);
-    }
+    };
     values.push(id_pack);
-    db.query(`UPDATE pack SET ${query.join(', ')} WHERE id_pack = ?`, values, (err, results) => {
-        if(err) {
-            console.error('Erro ao atualizar o pack.', err);
-            res.status(500).send('Erro ao atualizar o pack.');
-            return;
+    db.query(`UPDATE pack SET ${query.join(', ')} WHERE id_pack = ?`, values,
+        (err, results) => {
+            if (err) {
+                console.error('Erro ao atualizar o pack.', err);
+                return res.status(500).send('Erro ao atualizar o pack.');
+            };
+            if (results.affectedRows === 0) {
+                return res.status(404).send('Pack não encontrado.');
+            };
+            res.send('Pack atualizado com sucesso!');
         }
-        res.send('Pack atualizado com sucesso!')
-    })
-}
+    );
+};
 
 const delPack = (req, res) => {
-    const {id_pack} = req.params;
-    db.query('DELETE FROM pack WHERE id_pack = ?', [id_pack], (err, results) => {
-        if(err){
-            console.error('Erro ao deletar o pack.', err);
-            res.status(500).send('Erro ao deletar o pack.');
-            return;
-        }
-        res.send('Pack deletado com sucesso!')
-    })
-}
-
-const addEmployee = (req, res) => {
-    const {name, email, password, birth_date, position} = req.body;
-    db.query('INSERT INTO employees (name, email, password, birth_date, position) VALUES (?, ?, ?, ?, ?)',
-        [name, email, password, birth_date, position],
+    const { id_pack } = req.params;
+    db.query('DELETE FROM pack WHERE id_pack = ?', [id_pack],
         (err, results) => {
-            if(err){
-                console.error('Erro ao cadastrar funcionário.', err)
-                res.stutus(500).send('Erro ao cadastrar funcionário.')
-                return;
-            }
-            res.send('Funcionário cadastrado com sucesso!')
+            if (err) {
+                console.error('Erro ao deletar o pack.', err);
+                return res.status(500).send('Erro ao deletar o pack.');
+            };
+            if (results.affectedRows === 0) {
+                return res.status(404).send('Pack não encontrado.')
+            };
+            res.send('Pack deletado com sucesso!');
         }
-    )
-}
-
-const delEmployee = (req, res) => {
-    const {id_employee} = req.params;
-    db.query('DELETE FROM employees WHERE id_employee = ?', [id_employee], (err, results) => {
-        if(err) {
-            console.error('Erro ao deletar funcionário.', err)
-            res.status(500).send('Erro ao deletar funcionário.')
-            return;
-        }
-        res.send('Funcionário deletado com sucesso!')
-    })
-}
-
-const employees = (req, res) => {
-    db.query('SELECT * FROM employees', (err, results) => {
-        if (err) {
-            console.error('Erro ao obter os funcionários cadastrados', err)
-            res.status(500).send('Erro ao obter os funcionários cadastrados')
-            return
-        }
-        res.json(results)
-    })
-}
-
-const editEmployee = (req, res) => {
-    const {id_employee} = req.params;
-    const {position} = req.body;
-    if(!position){
-        res.status(400).send('Apenas o campo cargo é editável.')
-        return;
-    }
-    db.query('UPDATE employees SET position = ? WHERE id_employee = ?', [id_employee, position], (err, results) => {
-        if(err) {
-            console.error('Erro ao atualizar o cargo.', err);
-            res.status(500).send('Erro ao atualizar o cargo.');
-            return;
-        }
-        res.send('Cargo atualizado com sucesso!')
-    })
-}
+    );
+};
 
 const addOrder = (req, res) => {
     const { id_usuario, id_payment } = req.body;
-    // Calcula o total de preços dos itens no carrinho
-    const calcTotalSql = 'SELECT SUM(preco) AS price_total FROM carrinho WHERE id_usuario = ?';
-    db.query(calcTotalSql, [id_usuario], (err, totalResult) => {
-        if (err) {
-            console.error('Erro ao somar o total dos itens do carrinho', err);
-            res.status(500).send('Erro ao somar o total dos itens do carrinho');
-            return
-        }
-        const price_total = totalResult[0].price_total;
-        // Insere o pedido
-        const pedidoSql = 'INSERT INTO pedidos (id_usuario, price_total, id_payment) VALUES (?, ?, ?)';
-        db.query(pedidoSql, [id_usuario, price_total, id_payment], (err, result) => {
+    db.query('SELECT SUM(preco) AS price_total FROM carrinho WHERE id_usuario = ?', [id_usuario],
+        (err, totalResult) => {
             if (err) {
-                console.error('Erro ao inserir o pedido', err);
-                res.status(500).send('Erro ao inserir o pedido');
-                return
-            }
-            const id_pedido = result.insertId;
-            // Insere os itens do carrinho no itens_pedido
-            const itensSql = `
-                INSERT INTO itens_pedido (id_pedido, id_item, id_img, id_pack, preco, id_categoria)
-                SELECT ?, id, id_img, id_pack, preco, id_categoria
-                FROM carrinho
-                WHERE id_usuario = ?`;
-            db.query(itensSql, [id_pedido, id_usuario], (err, result) => {
-                if (err) {
-                    console.error('Erro ao inserir os itens do carrinho', err);
-                    res.status(500).send('Erro ao inserir os itens do carrinho');
-                    return
-                }
-                // Deleta o carrinho após criar o pedido
-                const deleteCarrinhoSql = 'DELETE FROM carrinho WHERE id_usuario = ?';
-                db.query(deleteCarrinhoSql, [id_usuario], (err, result) => {
+                console.error('Erro ao somar o total dos itens do carrinho', err);
+                return res.status(500).send('Erro ao somar o total dos itens do carrinho');
+            };
+            const price_total = totalResult[0].price_total;
+            db.query('INSERT INTO pedidos (id_usuario, price_total, id_payment) VALUES (?, ?, ?)',
+                [id_usuario, price_total, id_payment], (err, result) => {
                     if (err) {
-                        console.error('Erro ao deletar os itens do carrinho', err);
-                        res.status(500).send('Erro ao deletar os itens do carrinho');
-                        return
-                    }
-                    res.send('Pedido adicionado com sucesso!')
-                });
-            });
-        });
-    });
+                        console.error('Erro ao inserir o pedido', err);
+                        return res.status(500).send('Erro ao inserir o pedido');
+                    };
+                    const id_pedido = result.insertId;
+                    db.query(` INSERT INTO itens_pedido (id_pedido, id_item, id_img, id_pack, preco, id_categoria)
+                        SELECT ?, id, id_img, id_pack, preco, id_categoria FROM carrinho WHERE id_usuario = ?`,
+                        [id_pedido, id_usuario], (err, result) => {
+                            if (err) {
+                                console.error('Erro ao inserir os itens do carrinho', err);
+                                return res.status(500).send('Erro ao inserir os itens do carrinho');
+                            };
+                            db.query('DELETE FROM carrinho WHERE id_usuario = ?', [id_usuario], (err, result) => {
+                                if (err) {
+                                    console.error('Erro ao deletar os itens do carrinho', err);
+                                    return res.status(500).send('Erro ao deletar os itens do carrinho');
+                                };
+                                res.status(201).send('Pedido criado com sucesso!');
+                            });
+                        }
+                    );
+                }
+            );
+        }
+    );
 };
 
 const orders = (req, res) => {
     db.query('SELECT * FROM pedidos', (err, results) => {
         if (err) {
-            console.error('Erro ao obter os pedidos processados', err)
-            res.status(500).send('Erro ao obter os pedidos processados')
-            return
-        }
-        res.json(results)
-    })
-}
+            console.error('Erro ao obter os pedidos processados', err);
+            return res.status(500).send('Erro ao obter os pedidos processados');
+        };
+        res.json(results);
+    });
+};
 
 const users = (req, res) => {
     db.query('SELECT * FROM user', (err, results) => {
         if (err) {
-            console.error('Erro ao obter os usuários cadastrados', err)
-            res.status(500).send('Erro ao obter os usuários cadastrados')
-            return
-        }
-        res.json(results)
-    })
-}
+            console.error('Erro ao obter os usuários cadastrados', err);
+            return res.status(500).send('Erro ao obter os usuários cadastrados');
+        };
+        res.json(results);
+    });
+};
 
 const categoriaDeletada = (req, res) => {
     db.query('SELECT * FROM dat_del_category', (err, results) => {
         if (err) {
-            console.error('Erro ao obter os dados de backup de categoria deletada', err)
-            res.status(500).send('Erro ao obter os dados de backup de categoria deletada')
-            return
-        }
-        res.json(results)
-    })
-}
+            console.error('Erro ao obter os dados de backup de categoria deletada', err);
+            return res.status(500).send('Erro ao obter os dados de backup de categoria deletada');
+        };
+        res.json(results);
+    });
+};
 
 const filtroCategories = (req, res) => {
-    const {id_categoria} = req.params
+    const { id_categoria } = req.params;
     db.query(`SELECT image.id_image, pack.id_pack FROM image INNER JOIN 
         pack ON image.id_categoria = pack.id_categoria WHERE image.id_categoria = ?`,
         [id_categoria], (err, results) => {
-        if (err) {
-            console.error('Erro ao filtrar por categoria', err)
-            res.status(500).send('Erro ao filtrar por categoria')
-            return
+            if (err) {
+                console.error('Erro ao filtrar por categoria', err);
+                return res.status(500).send('Erro ao filtrar por categoria');
+            };
+            res.json(results);
         }
-        res.json(results)
-    })
-}
+    );
+};
 
 const filtroImages = (req, res) => {
     db.query(`SELECT id_image FROM image`, (err, results) => {
         if (err) {
-            console.error('Erro ao filtrar por imagem', err)
-            res.status(500).send('Erro ao filtrar por imagem')
-            return
-        }
-        res.json(results)
-    })
-}
+            console.error('Erro ao filtrar por imagem', err);
+            return res.status(500).send('Erro ao filtrar por imagem');
+        };
+        res.json(results);
+    });
+};
 
 const filtroPacks = (req, res) => {
     db.query(`SELECT id_pack FROM pack`, (err, results) => {
         if (err) {
-            console.error('Erro ao filtrar por pack', err)
-            res.status(500).send('Erro ao filtrar por pack')
-            return
+            console.error('Erro ao filtrar por pack', err);
+            return res.status(500).send('Erro ao filtrar por pack');
+        };
+        res.json(results);
+    });
+};
+
+const search = (req, res) => {
+    const searchTerm = req.query.termo;
+    const likeSearchTerm = `%${searchTerm}%`;
+    db.query(`SELECT 'image' AS type, id_image AS id, name, description, price FROM image
+    WHERE name LIKE ? OR description LIKE ? UNION
+    SELECT 'pack' AS type, id_pack AS id, name, description, price FROM pack
+    WHERE name LIKE ? OR description LIKE ?;`,
+    [likeSearchTerm, likeSearchTerm, likeSearchTerm, likeSearchTerm], (err, results) => {
+        if (err) {
+            console.error('Erro ao fazer a busca:', err);
+            return res.status(500).json({ error: 'Erro ao fazer a busca' });
         }
-        res.json(results)
-    })
-}
+        res.json(results);
+    });
+};
 
 module.exports = {
+    dadosEmployee,
+    editDatasEmployee,
     addCategory,
     categories,
     editCategory,
@@ -423,14 +470,11 @@ module.exports = {
     editPack,
     delPack,
     addOrder,
-    addEmployee,
-    employees,
-    editEmployee,
-    delEmployee,
-    users,
     orders,
+    users,
     categoriaDeletada,
     filtroCategories,
     filtroImages,
-    filtroPacks
+    filtroPacks,
+    search
 }
