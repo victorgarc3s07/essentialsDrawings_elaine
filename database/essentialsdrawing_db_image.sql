@@ -28,11 +28,11 @@ CREATE TABLE `image` (
   `id_image` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `description` varchar(5000) DEFAULT NULL,
-  `price` decimal(5,2) DEFAULT NULL,
   `id_categoria` int DEFAULT NULL,
+  `price` decimal(5,2) DEFAULT NULL,
   PRIMARY KEY (`id_image`),
   KEY `fk_CategImg` (`id_categoria`),
-  CONSTRAINT `fk_CategImg` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria`)
+  CONSTRAINT `fk_CategImg` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -54,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-16  8:33:41
+-- Dump completed on 2024-10-16  8:10:01

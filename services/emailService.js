@@ -23,4 +23,4 @@ const sendEmail = (to, subject, text) => {
         console.log('E-mail enviado:', info.response)
     })
 }
-module.exports = { sendEmail }; 
+module.exports = { sendEmail };

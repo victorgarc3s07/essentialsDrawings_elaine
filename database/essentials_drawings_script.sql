@@ -106,9 +106,9 @@ CREATE TABLE carrinho (
     id_pack INT,
     id_categoria INT,
     preco DECIMAL(10, 2),
-    FOREIGN KEY (id_img) REFERENCES image(id_image),   -- Supondo que você tenha uma tabela `imagens`
-	FOREIGN KEY (id_usuario) REFERENCES user(id),   -- Supondo que você tenha uma tabela `imagens`
-    FOREIGN KEY (id_pack) REFERENCES pack(id_pack),      -- Supondo que você tenha uma tabela `packs`
+    FOREIGN KEY (id_img) REFERENCES image(id_image), 
+	FOREIGN KEY (id_usuario) REFERENCES user(id), 
+    FOREIGN KEY (id_pack) REFERENCES pack(id_pack),     
     FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
 );
 
@@ -117,8 +117,8 @@ CREATE TABLE pedidos (
     id_usuario INT,
     id_payment INT,
     price_total DECIMAL(10, 2),
-    FOREIGN KEY (id_usuario) REFERENCES user(id), -- Supondo que você tenha uma tabela `usuarios`
-    FOREIGN KEY (id_payment) REFERENCES payment(id_payment)  -- Supondo que você tenha uma tabela `pagamentos`
+    FOREIGN KEY (id_usuario) REFERENCES user(id), 
+    FOREIGN KEY (id_payment) REFERENCES payment(id_payment)  
 );
 CREATE TABLE itens_pedido (
     id_pedido INT,
@@ -128,8 +128,8 @@ CREATE TABLE itens_pedido (
     id_categoria INT,
     preco DECIMAL(10, 2),
     FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
-    FOREIGN KEY (id_img) REFERENCES image(id_image),   -- Supondo que você tenha uma tabela `imagens`
-    FOREIGN KEY (id_pack) REFERENCES pack(id_pack),      -- Supondo que você tenha uma tabela `packs`
+    FOREIGN KEY (id_img) REFERENCES image(id_image),   
+    FOREIGN KEY (id_pack) REFERENCES pack(id_pack),      
     FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria) on update cascade on delete set null
 );
 

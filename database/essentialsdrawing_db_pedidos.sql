@@ -26,19 +26,14 @@ DROP TABLE IF EXISTS `pedidos`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pedidos` (
   `id_pedido` int NOT NULL AUTO_INCREMENT,
-  `id_user` int DEFAULT NULL,
-  `id_img` int DEFAULT NULL,
-  `id_pack` int DEFAULT NULL,
+  `id_usuario` int DEFAULT NULL,
   `id_payment` int DEFAULT NULL,
+  `price_total` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`id_pedido`),
-  KEY `fk_UserPedidos` (`id_user`),
-  KEY `fk_ImgPedidos` (`id_img`),
-  KEY `fk_PackPedidos` (`id_pack`),
-  KEY `fk_PayPedidos` (`id_payment`),
-  CONSTRAINT `fk_ImgPedidos` FOREIGN KEY (`id_img`) REFERENCES `image` (`id_image`),
-  CONSTRAINT `fk_PackPedidos` FOREIGN KEY (`id_pack`) REFERENCES `pack` (`id_pack`),
-  CONSTRAINT `fk_PayPedidos` FOREIGN KEY (`id_payment`) REFERENCES `payment` (`id_payment`),
-  CONSTRAINT `fk_UserPedidos` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
+  KEY `id_usuario` (`id_usuario`),
+  KEY `id_payment` (`id_payment`),
+  CONSTRAINT `pedidos_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `user` (`id`),
+  CONSTRAINT `pedidos_ibfk_2` FOREIGN KEY (`id_payment`) REFERENCES `payment` (`id_payment`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -60,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-16  8:33:41
+-- Dump completed on 2024-10-16  8:10:00

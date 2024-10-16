@@ -28,16 +28,19 @@ CREATE TABLE `pack` (
   `id_pack` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `description` varchar(5000) DEFAULT NULL,
-  `price` decimal(5,2) DEFAULT NULL,
+  `id_categoria` int DEFAULT NULL,
   `id_image1` int DEFAULT NULL,
   `id_image2` int DEFAULT NULL,
   `id_image3` int DEFAULT NULL,
   `id_image4` int DEFAULT NULL,
+  `price` decimal(5,2) DEFAULT NULL,
   PRIMARY KEY (`id_pack`),
+  KEY `fk_CategPack` (`id_categoria`),
   KEY `fk_Img1Pack` (`id_image1`),
   KEY `fk_Img2Pack` (`id_image2`),
   KEY `fk_Img3Pack` (`id_image3`),
   KEY `fk_Img4Pack` (`id_image4`),
+  CONSTRAINT `fk_CategPack` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `fk_Img1Pack` FOREIGN KEY (`id_image1`) REFERENCES `image` (`id_image`),
   CONSTRAINT `fk_Img2Pack` FOREIGN KEY (`id_image2`) REFERENCES `image` (`id_image`),
   CONSTRAINT `fk_Img3Pack` FOREIGN KEY (`id_image3`) REFERENCES `image` (`id_image`),
@@ -63,4 +66,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-16  8:33:41
+-- Dump completed on 2024-10-16  8:10:00

@@ -18,26 +18,37 @@ USE `essentialsdrawing_db`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `user`
+-- Table structure for table `itens_pedido`
 --
 
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `itens_pedido`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+CREATE TABLE `itens_pedido` (
+  `id_pedido` int DEFAULT NULL,
+  `id_item` int DEFAULT NULL,
+  `id_img` int DEFAULT NULL,
+  `id_pack` int DEFAULT NULL,
+  `id_categoria` int DEFAULT NULL,
+  `preco` decimal(10,2) DEFAULT NULL,
+  KEY `id_pedido` (`id_pedido`),
+  KEY `id_img` (`id_img`),
+  KEY `id_pack` (`id_pack`),
+  KEY `id_categoria` (`id_categoria`),
+  CONSTRAINT `itens_pedido_ibfk_1` FOREIGN KEY (`id_pedido`) REFERENCES `pedidos` (`id_pedido`),
+  CONSTRAINT `itens_pedido_ibfk_2` FOREIGN KEY (`id_img`) REFERENCES `image` (`id_image`),
+  CONSTRAINT `itens_pedido_ibfk_3` FOREIGN KEY (`id_pack`) REFERENCES `pack` (`id_pack`),
+  CONSTRAINT `itens_pedido_ibfk_4` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `user`
+-- Dumping data for table `itens_pedido`
 --
 
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+LOCK TABLES `itens_pedido` WRITE;
+/*!40000 ALTER TABLE `itens_pedido` DISABLE KEYS */;
+/*!40000 ALTER TABLE `itens_pedido` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -49,4 +60,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-16  8:10:01
+-- Dump completed on 2024-10-16  8:10:00

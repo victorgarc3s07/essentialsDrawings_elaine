@@ -27,8 +27,10 @@ DROP TABLE IF EXISTS `dados_user`;
 CREATE TABLE `dados_user` (
   `id_user` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) DEFAULT NULL,
-  `password` varchar(15) DEFAULT NULL,
+  `password` varchar(200) DEFAULT NULL,
   `birth_date` date DEFAULT NULL,
+  `resPassToken` varchar(255) DEFAULT NULL,
+  `resPassExpires` datetime DEFAULT NULL,
   PRIMARY KEY (`id_user`),
   CONSTRAINT `fk_UserDados` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -52,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-16  8:33:41
+-- Dump completed on 2024-10-16  8:10:01
