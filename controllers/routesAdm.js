@@ -8,7 +8,11 @@ const dadosEmployee = (req, res) => {
             console.error('Erro ao obter seus dados.', err);
             return res.status(500).send('Erro ao obter seus dados.');
         }
-        res.json(results);
+        if (results.length > 0) {
+            return res.json(results);
+        } else {
+            return res.status(404).send('Usuário não encontrado.');
+        }
     });
 };
 const editDatasEmployee = (req, res) => {
@@ -27,9 +31,13 @@ const editDatasEmployee = (req, res) => {
                 console.error('Erro ao atualizar os dados', err);
                 return res.status(500).send('Erro ao atualizar os dados');
             }
+            if (results.affectedRows === 0) {
+                return res.status(404).send('Usuário não encontrado');
+            } else {
+                return res.send('Dados atualizados com sucesso!');
+            }
         }
     );
-    res.send('Dados atualizados com sucesso!');
 };
 
 const addCategory = (req, res) => {
@@ -409,7 +417,11 @@ const filtroCategories = (req, res) => {
                 console.error('Erro ao filtrar por categoria', err);
                 return res.status(500).send('Erro ao filtrar por categoria');
             };
-            res.json(results);
+            if (results.length > 0) {
+                return res.json(results);
+            } else {
+                return res.status(404).send('Nenhuma imagem ou pack encontrado.');
+            }
         }
     );
 };
@@ -446,7 +458,11 @@ const search = (req, res) => {
             console.error('Erro ao fazer a busca:', err);
             return res.status(500).json({ error: 'Erro ao fazer a busca' });
         }
-        res.json(results);
+        if (results.length > 0) {
+            return res.json(results);
+        } else {
+            return res.status(404).send('Nenhuma imagem ou pack encontrado.');
+        }
     });
 };
 
