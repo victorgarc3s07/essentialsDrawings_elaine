@@ -9,7 +9,11 @@ const dadosUser = (req, res) => {
             console.error('Erro ao obter seus dados.', err);
             return res.status(500).send('Erro ao obter seus dados.');
         }
-        res.json(results);
+        if (results.length > 0) {
+            return res.json(results);
+        } else {
+            return res.status(404).send('Usuário não encontrado.');
+        }
     });
 };
 
@@ -67,7 +71,11 @@ const ordersUser = (req, res) => {
             console.error('Erro ao obter os pedidos processados', err);
             return res.status(500).send('Erro ao obter os pedidos processados');
         }
-        res.json(results);
+        if (results.length > 0) {
+            return res.json(results);
+        } else {
+            return res.status(404).send('Usuário não encontrado.');
+        }
     });
 };
 
@@ -94,7 +102,11 @@ const filtroImages = (req, res) => {
             console.error('Erro ao obter as imagens', err);
             return res.status(500).send('Erro ao obter as imagens');
         }
-        res.json(results);
+        if (results.length > 0) {
+            return res.json(results);
+        } else {
+            return res.status(404).send('Não há imagens');
+        }
     });
 };
 
@@ -107,7 +119,11 @@ const filtroPacks = (req, res) => {
             console.error('Erro ao obter os packs', err);
             return res.status(500).send('Erro ao obter os packs');
         }
-        res.json(results);
+        if (results.length > 0) {
+            return res.json(results);
+        } else {
+            return res.status(404).send('Não há pacotes');
+        }
     });
 };
 
